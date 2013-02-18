@@ -1,0 +1,299 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 46;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		B28BA54E15C1E83E00897E82 /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B28BA54D15C1E83E00897E82 /* Cocoa.framework */; };
+		B28BA55815C1E83E00897E82 /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = B28BA55615C1E83E00897E82 /* InfoPlist.strings */; };
+		B28BA56115C1E87000897E82 /* CustomNC.m in Sources */ = {isa = PBXBuildFile; fileRef = B28BA56015C1E87000897E82 /* CustomNC.m */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXFileReference section */
+		B2804EF5160CA2C6008F7AEC /* NCAppInfo.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NCAppInfo.h; sourceTree = "<group>"; };
+		B2804EF7160CA2EB008F7AEC /* NCModel.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NCModel.h; sourceTree = "<group>"; };
+		B2804EF8160CA3CB008F7AEC /* NCAppInfoDelegate-Protocol.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NCAppInfoDelegate-Protocol.h"; sourceTree = "<group>"; };
+		B2804EF9160CA408008F7AEC /* QLPreviewItem-Protocol.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "QLPreviewItem-Protocol.h"; sourceTree = "<group>"; };
+		B28BA54A15C1E83E00897E82 /* CustomNC.bundle */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = CustomNC.bundle; sourceTree = BUILT_PRODUCTS_DIR; };
+		B28BA54D15C1E83E00897E82 /* Cocoa.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Cocoa.framework; path = System/Library/Frameworks/Cocoa.framework; sourceTree = SDKROOT; };
+		B28BA55015C1E83E00897E82 /* AppKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AppKit.framework; path = System/Library/Frameworks/AppKit.framework; sourceTree = SDKROOT; };
+		B28BA55115C1E83E00897E82 /* CoreData.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreData.framework; path = System/Library/Frameworks/CoreData.framework; sourceTree = SDKROOT; };
+		B28BA55215C1E83E00897E82 /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
+		B28BA55515C1E83E00897E82 /* CustomNC-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "CustomNC-Info.plist"; sourceTree = "<group>"; };
+		B28BA55715C1E83E00897E82 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/InfoPlist.strings; sourceTree = "<group>"; };
+		B28BA55915C1E83E00897E82 /* CustomNC-Prefix.pch */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "CustomNC-Prefix.pch"; sourceTree = "<group>"; };
+		B28BA55F15C1E87000897E82 /* CustomNC.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CustomNC.h; sourceTree = "<group>"; };
+		B28BA56015C1E87000897E82 /* CustomNC.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CustomNC.m; sourceTree = "<group>"; };
+		B28BA57415C20C8200897E82 /* NCNotificationWindow.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NCNotificationWindow.h; sourceTree = "<group>"; };
+		B28BA57515C20C8200897E82 /* NCNotificationWindowDelegate-Protocol.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NCNotificationWindowDelegate-Protocol.h"; sourceTree = "<group>"; };
+		B28BA57615C20C8200897E82 /* NCWindowLayoutController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NCWindowLayoutController.h; sourceTree = "<group>"; };
+		B28BA57715C20C8200897E82 /* NCWindowLayoutDelegate-Protocol.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NCWindowLayoutDelegate-Protocol.h"; sourceTree = "<group>"; };
+		B28BA57815C20CA600897E82 /* NCRoundedWindowContentDelegate-Protocol.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NCRoundedWindowContentDelegate-Protocol.h"; sourceTree = "<group>"; };
+		B28BA57915C20CA600897E82 /* NCRoundedWindowContentView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NCRoundedWindowContentView.h; sourceTree = "<group>"; };
+		B28BA57A15C20CF200897E82 /* NCAlertDelegate-Protocol.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NCAlertDelegate-Protocol.h"; sourceTree = "<group>"; };
+		B28BA57B15C20CF300897E82 /* NCBannerDelegate-Protocol.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NCBannerDelegate-Protocol.h"; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		B28BA54715C1E83E00897E82 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				B28BA54E15C1E83E00897E82 /* Cocoa.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		B28BA53F15C1E83E00897E82 = {
+			isa = PBXGroup;
+			children = (
+				B28BA55315C1E83E00897E82 /* CustomNC */,
+				B28BA54C15C1E83E00897E82 /* Frameworks */,
+				B28BA54B15C1E83E00897E82 /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+		B28BA54B15C1E83E00897E82 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				B28BA54A15C1E83E00897E82 /* CustomNC.bundle */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		B28BA54C15C1E83E00897E82 /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				B28BA54D15C1E83E00897E82 /* Cocoa.framework */,
+				B28BA54F15C1E83E00897E82 /* Other Frameworks */,
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
+		B28BA54F15C1E83E00897E82 /* Other Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				B28BA55015C1E83E00897E82 /* AppKit.framework */,
+				B28BA55115C1E83E00897E82 /* CoreData.framework */,
+				B28BA55215C1E83E00897E82 /* Foundation.framework */,
+			);
+			name = "Other Frameworks";
+			sourceTree = "<group>";
+		};
+		B28BA55315C1E83E00897E82 /* CustomNC */ = {
+			isa = PBXGroup;
+			children = (
+				B2804EF9160CA408008F7AEC /* QLPreviewItem-Protocol.h */,
+				B2804EF8160CA3CB008F7AEC /* NCAppInfoDelegate-Protocol.h */,
+				B2804EF7160CA2EB008F7AEC /* NCModel.h */,
+				B2804EF5160CA2C6008F7AEC /* NCAppInfo.h */,
+				B28BA57A15C20CF200897E82 /* NCAlertDelegate-Protocol.h */,
+				B28BA57B15C20CF300897E82 /* NCBannerDelegate-Protocol.h */,
+				B28BA57815C20CA600897E82 /* NCRoundedWindowContentDelegate-Protocol.h */,
+				B28BA57915C20CA600897E82 /* NCRoundedWindowContentView.h */,
+				B28BA57415C20C8200897E82 /* NCNotificationWindow.h */,
+				B28BA57515C20C8200897E82 /* NCNotificationWindowDelegate-Protocol.h */,
+				B28BA57615C20C8200897E82 /* NCWindowLayoutController.h */,
+				B28BA57715C20C8200897E82 /* NCWindowLayoutDelegate-Protocol.h */,
+				B28BA55415C1E83E00897E82 /* Supporting Files */,
+				B28BA55F15C1E87000897E82 /* CustomNC.h */,
+				B28BA56015C1E87000897E82 /* CustomNC.m */,
+			);
+			path = CustomNC;
+			sourceTree = "<group>";
+		};
+		B28BA55415C1E83E00897E82 /* Supporting Files */ = {
+			isa = PBXGroup;
+			children = (
+				B28BA55515C1E83E00897E82 /* CustomNC-Info.plist */,
+				B28BA55615C1E83E00897E82 /* InfoPlist.strings */,
+				B28BA55915C1E83E00897E82 /* CustomNC-Prefix.pch */,
+			);
+			name = "Supporting Files";
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		B28BA54915C1E83E00897E82 /* CustomNC */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = B28BA55C15C1E83E00897E82 /* Build configuration list for PBXNativeTarget "CustomNC" */;
+			buildPhases = (
+				B28BA54615C1E83E00897E82 /* Sources */,
+				B28BA54715C1E83E00897E82 /* Frameworks */,
+				B28BA54815C1E83E00897E82 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = CustomNC;
+			productName = CustomNC;
+			productReference = B28BA54A15C1E83E00897E82 /* CustomNC.bundle */;
+			productType = "com.apple.product-type.bundle";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		B28BA54115C1E83E00897E82 /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				LastUpgradeCheck = 0440;
+				ORGANIZATIONNAME = inket;
+			};
+			buildConfigurationList = B28BA54415C1E83E00897E82 /* Build configuration list for PBXProject "CustomNC" */;
+			compatibilityVersion = "Xcode 3.2";
+			developmentRegion = English;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				en,
+			);
+			mainGroup = B28BA53F15C1E83E00897E82;
+			productRefGroup = B28BA54B15C1E83E00897E82 /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				B28BA54915C1E83E00897E82 /* CustomNC */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXResourcesBuildPhase section */
+		B28BA54815C1E83E00897E82 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				B28BA55815C1E83E00897E82 /* InfoPlist.strings in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		B28BA54615C1E83E00897E82 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				B28BA56115C1E87000897E82 /* CustomNC.m in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin PBXVariantGroup section */
+		B28BA55615C1E83E00897E82 /* InfoPlist.strings */ = {
+			isa = PBXVariantGroup;
+			children = (
+				B28BA55715C1E83E00897E82 /* en */,
+			);
+			name = InfoPlist.strings;
+			sourceTree = "<group>";
+		};
+/* End PBXVariantGroup section */
+
+/* Begin XCBuildConfiguration section */
+		B28BA55A15C1E83E00897E82 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				ARCHS = "$(ARCHS_STANDARD_64_BIT)";
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				GCC_C_LANGUAGE_STANDARD = gnu99;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_ENABLE_OBJC_EXCEPTIONS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				MACOSX_DEPLOYMENT_TARGET = 10.8;
+				ONLY_ACTIVE_ARCH = YES;
+				SDKROOT = macosx;
+			};
+			name = Debug;
+		};
+		B28BA55B15C1E83E00897E82 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				ARCHS = "$(ARCHS_STANDARD_64_BIT)";
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = YES;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				GCC_C_LANGUAGE_STANDARD = gnu99;
+				GCC_ENABLE_OBJC_EXCEPTIONS = YES;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				MACOSX_DEPLOYMENT_TARGET = 10.8;
+				SDKROOT = macosx;
+			};
+			name = Release;
+		};
+		B28BA55D15C1E83E00897E82 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				COMBINE_HIDPI_IMAGES = YES;
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = "CustomNC/CustomNC-Prefix.pch";
+				INFOPLIST_FILE = "CustomNC/CustomNC-Info.plist";
+				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Bundles";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				WRAPPER_EXTENSION = bundle;
+			};
+			name = Debug;
+		};
+		B28BA55E15C1E83E00897E82 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				COMBINE_HIDPI_IMAGES = YES;
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = "CustomNC/CustomNC-Prefix.pch";
+				INFOPLIST_FILE = "CustomNC/CustomNC-Info.plist";
+				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Bundles";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				WRAPPER_EXTENSION = bundle;
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		B28BA54415C1E83E00897E82 /* Build configuration list for PBXProject "CustomNC" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				B28BA55A15C1E83E00897E82 /* Debug */,
+				B28BA55B15C1E83E00897E82 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		B28BA55C15C1E83E00897E82 /* Build configuration list for PBXNativeTarget "CustomNC" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				B28BA55D15C1E83E00897E82 /* Debug */,
+				B28BA55E15C1E83E00897E82 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = B28BA54115C1E83E00897E82 /* Project object */;
+}

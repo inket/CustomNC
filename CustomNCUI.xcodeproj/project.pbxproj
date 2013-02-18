@@ -1,0 +1,385 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 46;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		B21B399B16D21D4E00278191 /* CustomNC.bundle in CopyFiles */ = {isa = PBXBuildFile; fileRef = B21B399816D21D3000278191 /* CustomNC.bundle */; };
+		B243E6F315C76F1300713CB5 /* LoginItem.m in Sources */ = {isa = PBXBuildFile; fileRef = B243E6F215C76F1300713CB5 /* LoginItem.m */; };
+		B29D098B15C45E0900E25374 /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B29D098A15C45E0900E25374 /* Cocoa.framework */; };
+		B29D099515C45E0900E25374 /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = B29D099315C45E0900E25374 /* InfoPlist.strings */; };
+		B29D099715C45E0900E25374 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = B29D099615C45E0900E25374 /* main.m */; };
+		B29D099B15C45E0900E25374 /* Credits.rtf in Resources */ = {isa = PBXBuildFile; fileRef = B29D099915C45E0900E25374 /* Credits.rtf */; };
+		B29D099E15C45E0900E25374 /* CNCAppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = B29D099D15C45E0900E25374 /* CNCAppDelegate.m */; };
+		B29D09A115C45E0A00E25374 /* MainMenu.xib in Resources */ = {isa = PBXBuildFile; fileRef = B29D099F15C45E0A00E25374 /* MainMenu.xib */; };
+		B29D09B315C498EF00E25374 /* MBSlider.m in Sources */ = {isa = PBXBuildFile; fileRef = B29D09B215C498EF00E25374 /* MBSlider.m */; };
+		B2B4372D15C79B6000632102 /* CustomNCLauncher.app in Resources */ = {isa = PBXBuildFile; fileRef = B2B4372C15C79B6000632102 /* CustomNCLauncher.app */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXContainerItemProxy section */
+		B21B399716D21D3000278191 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = B230DFAE16D1EA61005A4ED0 /* CustomNC.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = B28BA54A15C1E83E00897E82;
+			remoteInfo = CustomNC;
+		};
+		B21B399916D21D4A00278191 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = B230DFAE16D1EA61005A4ED0 /* CustomNC.xcodeproj */;
+			proxyType = 1;
+			remoteGlobalIDString = B28BA54915C1E83E00897E82;
+			remoteInfo = CustomNC;
+		};
+/* End PBXContainerItemProxy section */
+
+/* Begin PBXCopyFilesBuildPhase section */
+		B230DFB716D1ECA6005A4ED0 /* CopyFiles */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "";
+			dstSubfolderSpec = 7;
+			files = (
+				B21B399B16D21D4E00278191 /* CustomNC.bundle in CopyFiles */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXCopyFilesBuildPhase section */
+
+/* Begin PBXFileReference section */
+		B230DFAE16D1EA61005A4ED0 /* CustomNC.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = CustomNC.xcodeproj; path = CustomNCUI/CustomNC/CustomNC.xcodeproj; sourceTree = SOURCE_ROOT; };
+		B243E6F115C76F1300713CB5 /* LoginItem.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LoginItem.h; sourceTree = "<group>"; };
+		B243E6F215C76F1300713CB5 /* LoginItem.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = LoginItem.m; sourceTree = "<group>"; };
+		B29D098615C45E0900E25374 /* CustomNC.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = CustomNC.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		B29D098A15C45E0900E25374 /* Cocoa.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Cocoa.framework; path = System/Library/Frameworks/Cocoa.framework; sourceTree = SDKROOT; };
+		B29D098D15C45E0900E25374 /* AppKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AppKit.framework; path = System/Library/Frameworks/AppKit.framework; sourceTree = SDKROOT; };
+		B29D098E15C45E0900E25374 /* CoreData.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreData.framework; path = System/Library/Frameworks/CoreData.framework; sourceTree = SDKROOT; };
+		B29D098F15C45E0900E25374 /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
+		B29D099215C45E0900E25374 /* CustomNC-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "CustomNC-Info.plist"; sourceTree = "<group>"; };
+		B29D099415C45E0900E25374 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/InfoPlist.strings; sourceTree = "<group>"; };
+		B29D099615C45E0900E25374 /* main.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
+		B29D099815C45E0900E25374 /* CustomNC-Prefix.pch */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "CustomNC-Prefix.pch"; sourceTree = "<group>"; };
+		B29D099A15C45E0900E25374 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.rtf; name = en; path = en.lproj/Credits.rtf; sourceTree = "<group>"; };
+		B29D099C15C45E0900E25374 /* CNCAppDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = CNCAppDelegate.h; sourceTree = "<group>"; };
+		B29D099D15C45E0900E25374 /* CNCAppDelegate.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = CNCAppDelegate.m; sourceTree = "<group>"; };
+		B29D09A015C45E0A00E25374 /* en */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = en; path = en.lproj/MainMenu.xib; sourceTree = "<group>"; };
+		B29D09B115C498EF00E25374 /* MBSlider.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MBSlider.h; sourceTree = "<group>"; };
+		B29D09B215C498EF00E25374 /* MBSlider.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MBSlider.m; sourceTree = "<group>"; };
+		B2B4372C15C79B6000632102 /* CustomNCLauncher.app */ = {isa = PBXFileReference; lastKnownFileType = wrapper.application; path = CustomNCLauncher.app; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		B29D098315C45E0900E25374 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				B29D098B15C45E0900E25374 /* Cocoa.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		B21B399416D21D3000278191 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				B21B399816D21D3000278191 /* CustomNC.bundle */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		B29D097B15C45E0900E25374 = {
+			isa = PBXGroup;
+			children = (
+				B230DFAE16D1EA61005A4ED0 /* CustomNC.xcodeproj */,
+				B29D099015C45E0900E25374 /* CustomNCUI */,
+				B29D098915C45E0900E25374 /* Frameworks */,
+				B29D098715C45E0900E25374 /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+		B29D098715C45E0900E25374 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				B29D098615C45E0900E25374 /* CustomNC.app */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		B29D098915C45E0900E25374 /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				B29D098A15C45E0900E25374 /* Cocoa.framework */,
+				B29D098C15C45E0900E25374 /* Other Frameworks */,
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
+		B29D098C15C45E0900E25374 /* Other Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				B29D098D15C45E0900E25374 /* AppKit.framework */,
+				B29D098E15C45E0900E25374 /* CoreData.framework */,
+				B29D098F15C45E0900E25374 /* Foundation.framework */,
+			);
+			name = "Other Frameworks";
+			sourceTree = "<group>";
+		};
+		B29D099015C45E0900E25374 /* CustomNCUI */ = {
+			isa = PBXGroup;
+			children = (
+				B2B4372C15C79B6000632102 /* CustomNCLauncher.app */,
+				B243E6F115C76F1300713CB5 /* LoginItem.h */,
+				B243E6F215C76F1300713CB5 /* LoginItem.m */,
+				B29D099C15C45E0900E25374 /* CNCAppDelegate.h */,
+				B29D099D15C45E0900E25374 /* CNCAppDelegate.m */,
+				B29D099F15C45E0A00E25374 /* MainMenu.xib */,
+				B29D099115C45E0900E25374 /* Supporting Files */,
+				B29D09B115C498EF00E25374 /* MBSlider.h */,
+				B29D09B215C498EF00E25374 /* MBSlider.m */,
+			);
+			path = CustomNCUI;
+			sourceTree = "<group>";
+		};
+		B29D099115C45E0900E25374 /* Supporting Files */ = {
+			isa = PBXGroup;
+			children = (
+				B29D099215C45E0900E25374 /* CustomNC-Info.plist */,
+				B29D099315C45E0900E25374 /* InfoPlist.strings */,
+				B29D099615C45E0900E25374 /* main.m */,
+				B29D099815C45E0900E25374 /* CustomNC-Prefix.pch */,
+				B29D099915C45E0900E25374 /* Credits.rtf */,
+			);
+			name = "Supporting Files";
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		B29D098515C45E0900E25374 /* CustomNC */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = B29D09A415C45E0A00E25374 /* Build configuration list for PBXNativeTarget "CustomNC" */;
+			buildPhases = (
+				B29D098215C45E0900E25374 /* Sources */,
+				B29D098315C45E0900E25374 /* Frameworks */,
+				B29D098415C45E0900E25374 /* Resources */,
+				B230DFB716D1ECA6005A4ED0 /* CopyFiles */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				B21B399A16D21D4A00278191 /* PBXTargetDependency */,
+			);
+			name = CustomNC;
+			productName = CustomNCUI;
+			productReference = B29D098615C45E0900E25374 /* CustomNC.app */;
+			productType = "com.apple.product-type.application";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		B29D097D15C45E0900E25374 /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				CLASSPREFIX = CNC;
+				LastUpgradeCheck = 0440;
+				ORGANIZATIONNAME = inket;
+			};
+			buildConfigurationList = B29D098015C45E0900E25374 /* Build configuration list for PBXProject "CustomNCUI" */;
+			compatibilityVersion = "Xcode 3.2";
+			developmentRegion = English;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				en,
+			);
+			mainGroup = B29D097B15C45E0900E25374;
+			productRefGroup = B29D098715C45E0900E25374 /* Products */;
+			projectDirPath = "";
+			projectReferences = (
+				{
+					ProductGroup = B21B399416D21D3000278191 /* Products */;
+					ProjectRef = B230DFAE16D1EA61005A4ED0 /* CustomNC.xcodeproj */;
+				},
+			);
+			projectRoot = "";
+			targets = (
+				B29D098515C45E0900E25374 /* CustomNC */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXReferenceProxy section */
+		B21B399816D21D3000278191 /* CustomNC.bundle */ = {
+			isa = PBXReferenceProxy;
+			fileType = wrapper.cfbundle;
+			path = CustomNC.bundle;
+			remoteRef = B21B399716D21D3000278191 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+/* End PBXReferenceProxy section */
+
+/* Begin PBXResourcesBuildPhase section */
+		B29D098415C45E0900E25374 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				B29D099515C45E0900E25374 /* InfoPlist.strings in Resources */,
+				B29D099B15C45E0900E25374 /* Credits.rtf in Resources */,
+				B29D09A115C45E0A00E25374 /* MainMenu.xib in Resources */,
+				B2B4372D15C79B6000632102 /* CustomNCLauncher.app in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		B29D098215C45E0900E25374 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				B29D099715C45E0900E25374 /* main.m in Sources */,
+				B29D099E15C45E0900E25374 /* CNCAppDelegate.m in Sources */,
+				B29D09B315C498EF00E25374 /* MBSlider.m in Sources */,
+				B243E6F315C76F1300713CB5 /* LoginItem.m in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin PBXTargetDependency section */
+		B21B399A16D21D4A00278191 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = CustomNC;
+			targetProxy = B21B399916D21D4A00278191 /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
+
+/* Begin PBXVariantGroup section */
+		B29D099315C45E0900E25374 /* InfoPlist.strings */ = {
+			isa = PBXVariantGroup;
+			children = (
+				B29D099415C45E0900E25374 /* en */,
+			);
+			name = InfoPlist.strings;
+			sourceTree = "<group>";
+		};
+		B29D099915C45E0900E25374 /* Credits.rtf */ = {
+			isa = PBXVariantGroup;
+			children = (
+				B29D099A15C45E0900E25374 /* en */,
+			);
+			name = Credits.rtf;
+			sourceTree = "<group>";
+		};
+		B29D099F15C45E0A00E25374 /* MainMenu.xib */ = {
+			isa = PBXVariantGroup;
+			children = (
+				B29D09A015C45E0A00E25374 /* en */,
+			);
+			name = MainMenu.xib;
+			sourceTree = "<group>";
+		};
+/* End PBXVariantGroup section */
+
+/* Begin XCBuildConfiguration section */
+		B29D09A215C45E0A00E25374 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				ARCHS = "$(ARCHS_STANDARD_64_BIT)";
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				GCC_C_LANGUAGE_STANDARD = gnu99;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_ENABLE_OBJC_EXCEPTIONS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				MACOSX_DEPLOYMENT_TARGET = 10.8;
+				ONLY_ACTIVE_ARCH = YES;
+				SDKROOT = macosx;
+			};
+			name = Debug;
+		};
+		B29D09A315C45E0A00E25374 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				ARCHS = "$(ARCHS_STANDARD_64_BIT)";
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = YES;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				GCC_C_LANGUAGE_STANDARD = gnu99;
+				GCC_ENABLE_OBJC_EXCEPTIONS = YES;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				MACOSX_DEPLOYMENT_TARGET = 10.8;
+				SDKROOT = macosx;
+			};
+			name = Release;
+		};
+		B29D09A515C45E0A00E25374 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				COMBINE_HIDPI_IMAGES = YES;
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = "CustomNCUI/CustomNC-Prefix.pch";
+				INFOPLIST_FILE = "CustomNCUI/CustomNC-Info.plist";
+				PRODUCT_NAME = CustomNC;
+				WRAPPER_EXTENSION = app;
+			};
+			name = Debug;
+		};
+		B29D09A615C45E0A00E25374 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				COMBINE_HIDPI_IMAGES = YES;
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = "CustomNCUI/CustomNC-Prefix.pch";
+				INFOPLIST_FILE = "CustomNCUI/CustomNC-Info.plist";
+				PRODUCT_NAME = CustomNC;
+				WRAPPER_EXTENSION = app;
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		B29D098015C45E0900E25374 /* Build configuration list for PBXProject "CustomNCUI" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				B29D09A215C45E0A00E25374 /* Debug */,
+				B29D09A315C45E0A00E25374 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		B29D09A415C45E0A00E25374 /* Build configuration list for PBXNativeTarget "CustomNC" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				B29D09A515C45E0A00E25374 /* Debug */,
+				B29D09A615C45E0A00E25374 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = B29D097D15C45E0900E25374 /* Project object */;
+}

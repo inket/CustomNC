@@ -12,6 +12,15 @@ What it does behind the scenes is:
 
 - Install a SIMBL plugin and gives it your parameters
 
+#### Requirements
+
+- [SIMBL](http://www.culater.net/software/SIMBL/SIMBL.php)
+
+	*or*
+
+- [EasySIMBL](https://github.com/norio-nomura/EasySIMBL/#readme)
+
+
 #### Download
 
 [Download here!](http://d.pr/JGiS)

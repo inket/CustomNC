@@ -13,10 +13,18 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		B20CEBBD17773E4100D4AEA3 /* NCBannerAnimation.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = NCBannerAnimation.h; sourceTree = "<group>"; };
+		B20CEBBE1777419B00D4AEA3 /* NCBannerAnimationVerticalIn.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = NCBannerAnimationVerticalIn.h; sourceTree = "<group>"; };
+		B20CEBBF1777436B00D4AEA3 /* NCBannerAnimationFadeIn.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = NCBannerAnimationFadeIn.h; sourceTree = "<group>"; };
+		B20CEBC01777455000D4AEA3 /* NCBannerAnimationFadeOut.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = NCBannerAnimationFadeOut.h; sourceTree = "<group>"; };
+		B20CEBC11777455000D4AEA3 /* NCBannerAnimationHorizontalOut.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = NCBannerAnimationHorizontalOut.h; sourceTree = "<group>"; };
+		B20CEBC21777455000D4AEA3 /* NCBannerAnimationPoofOut.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = NCBannerAnimationPoofOut.h; sourceTree = "<group>"; };
+		B20CEBC31777455000D4AEA3 /* NCBannerAnimationVerticalOut.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = NCBannerAnimationVerticalOut.h; sourceTree = "<group>"; };
 		B2804EF5160CA2C6008F7AEC /* NCAppInfo.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NCAppInfo.h; sourceTree = "<group>"; };
 		B2804EF7160CA2EB008F7AEC /* NCModel.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NCModel.h; sourceTree = "<group>"; };
 		B2804EF8160CA3CB008F7AEC /* NCAppInfoDelegate-Protocol.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NCAppInfoDelegate-Protocol.h"; sourceTree = "<group>"; };
 		B2804EF9160CA408008F7AEC /* QLPreviewItem-Protocol.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "QLPreviewItem-Protocol.h"; sourceTree = "<group>"; };
+		B28AA7F917C9B0D300FE4FEC /* NCBannerWindowController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = NCBannerWindowController.h; sourceTree = "<group>"; };
 		B28BA54A15C1E83E00897E82 /* CustomNC.bundle */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = CustomNC.bundle; sourceTree = BUILT_PRODUCTS_DIR; };
 		B28BA54D15C1E83E00897E82 /* Cocoa.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Cocoa.framework; path = System/Library/Frameworks/Cocoa.framework; sourceTree = SDKROOT; };
 		B28BA55015C1E83E00897E82 /* AppKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AppKit.framework; path = System/Library/Frameworks/AppKit.framework; sourceTree = SDKROOT; };
@@ -69,7 +77,6 @@
 		B28BA54C15C1E83E00897E82 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
-				B28BA54D15C1E83E00897E82 /* Cocoa.framework */,
 				B28BA54F15C1E83E00897E82 /* Other Frameworks */,
 			);
 			name = Frameworks;
@@ -78,6 +85,7 @@
 		B28BA54F15C1E83E00897E82 /* Other Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				B28BA54D15C1E83E00897E82 /* Cocoa.framework */,
 				B28BA55015C1E83E00897E82 /* AppKit.framework */,
 				B28BA55115C1E83E00897E82 /* CoreData.framework */,
 				B28BA55215C1E83E00897E82 /* Foundation.framework */,
@@ -88,6 +96,14 @@
 		B28BA55315C1E83E00897E82 /* CustomNC */ = {
 			isa = PBXGroup;
 			children = (
+				B28AA7F917C9B0D300FE4FEC /* NCBannerWindowController.h */,
+				B20CEBC01777455000D4AEA3 /* NCBannerAnimationFadeOut.h */,
+				B20CEBC11777455000D4AEA3 /* NCBannerAnimationHorizontalOut.h */,
+				B20CEBC21777455000D4AEA3 /* NCBannerAnimationPoofOut.h */,
+				B20CEBC31777455000D4AEA3 /* NCBannerAnimationVerticalOut.h */,
+				B20CEBBF1777436B00D4AEA3 /* NCBannerAnimationFadeIn.h */,
+				B20CEBBE1777419B00D4AEA3 /* NCBannerAnimationVerticalIn.h */,
+				B20CEBBD17773E4100D4AEA3 /* NCBannerAnimation.h */,
 				B2804EF9160CA408008F7AEC /* QLPreviewItem-Protocol.h */,
 				B2804EF8160CA3CB008F7AEC /* NCAppInfoDelegate-Protocol.h */,
 				B2804EF7160CA2EB008F7AEC /* NCModel.h */,
@@ -143,7 +159,7 @@
 		B28BA54115C1E83E00897E82 /* Project object */ = {
 			isa = PBXProject;
 			attributes = {
-				LastUpgradeCheck = 0440;
+				LastUpgradeCheck = 0500;
 				ORGANIZATIONNAME = inket;
 			};
 			buildConfigurationList = B28BA54415C1E83E00897E82 /* Build configuration list for PBXProject "CustomNC" */;
@@ -201,7 +217,6 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
-				ARCHS = "$(ARCHS_STANDARD_64_BIT)";
 				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
 				CLANG_ENABLE_OBJC_ARC = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
@@ -229,7 +244,6 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
-				ARCHS = "$(ARCHS_STANDARD_64_BIT)";
 				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
 				CLANG_ENABLE_OBJC_ARC = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;

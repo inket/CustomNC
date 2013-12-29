@@ -2,8 +2,7 @@
 //  CNCAppDelegate.h
 //  CustomNCUI
 //
-//  Created by inket on 28/07/2012.
-//  Copyright (c) 2012-2013 inket. Licensed under GNU GPL v3.0. See LICENSE for details.
+//  Copyright (c) 2012-2013 Mahdi Bchetnia. Licensed under GNU GPL v3.0. See LICENSE for details.
 //
 
 #import <Cocoa/Cocoa.h>
@@ -13,6 +12,8 @@
 @interface CNCAppDelegate : NSObject <NSApplicationDelegate> {
     BOOL isSIMBL;
     BOOL isEasySIMBL;
+    
+    NSTimeInterval apply;
 }
 
 @property (assign) IBOutlet NSWindow *window;
@@ -31,7 +32,6 @@
 @property (assign) IBOutlet NSButton* fixGrowl;
 @property (assign) IBOutlet NSButton* removeAppName;
 
-@property (assign) IBOutlet NSProgressIndicator* progressIndicator;
 @property (assign) IBOutlet NSButton* applyButton;
 
 @end

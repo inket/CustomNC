@@ -2,8 +2,7 @@
 //  CNCAppDelegate.m
 //  CustomNCUI
 //
-//  Created by inket on 28/07/2012.
-//  Copyright (c) 2012-2013 inket. Licensed under GNU GPL v3.0. See LICENSE for details.
+//  Copyright (c) 2012-2013 Mahdi Bchetnia. Licensed under GNU GPL v3.0. See LICENSE for details.
 //
 
 #import "CNCAppDelegate.h"
@@ -13,161 +12,219 @@
 
 @implementation CNCAppDelegate
 
-@synthesize window;
+#pragma mark - Setting up the UI
 
-@synthesize alwaysPulseIcon;
-@synthesize hideIcon;
+- (void)awakeFromNib {
+    [_entryAnimationDuration setAltIncrementValue:0.5];
+    [_entryAnimationDuration setFormatString:@"%@ second%@"];
+    [_bannerIdleDuration setAltIncrementValue:0.5];
+    [_bannerIdleDuration setFormatString:@"approx. %@ second%@"];
+    [_exitAnimationDuration setAltIncrementValue:0.5];
+    [_exitAnimationDuration setFormatString:@"%@ second%@"];
+    
+    if (![self OSIsMountainLion])
+    {
+        [_alwaysPulseIcon setState:NSOffState];
+        [_alwaysPulseIcon setEnabled:NO];
+    }
+    
+    // Recreate the exit animation styles list, taking into account the OS version
+    NSMenu* menu = [[NSMenu alloc] init];
+    [menu addItemWithTitle:@"Slide" action:nil keyEquivalent:@""];
+    [menu addItemWithTitle:@"Fade" action:nil keyEquivalent:@""];
+    [menu addItemWithTitle:[self OSIsMountainLion] ? @"Poof" : @"Raise" action:nil keyEquivalent:@""];
+    [_exitAnimationStyle setMenu:menu];
+    
+    [self install]; // Install/update plug-in if necessary
+    
+    if (!isEasySIMBL)
+        // SIMBL doesn't inject apps at user login
+        // so we have to do that with an automator workflow set as a login item
+        [self addLoginItem];
+    else
+        // EasySIMBL doesn't have such problems
+        [self removeLoginItem];
+    
+    // Sync the UI elements to the saved preferences
+    NSUserDefaults* userDefaults = [NSUserDefaults standardUserDefaults];
+    
+    NSNumber* entryStyle = [userDefaults objectForKey:@"entryAnimationStyle"];
+    [_entryAnimationStyle selectItemAtIndex:entryStyle ? [entryStyle integerValue] : 0];
+    
+    NSNumber* entryDuration = [userDefaults objectForKey:@"entryAnimationDuration"];
+    [_entryAnimationDuration setMaxDigits:4];
+    [_entryAnimationDuration setDoubleValue:entryDuration ? [entryDuration doubleValue] : 0.7];
 
-@synthesize entryAnimationStyle;
-@synthesize entryAnimationDuration;
+    NSNumber* idleDuration = [userDefaults objectForKey:@"bannerIdleDuration"];
+    [_bannerIdleDuration setMaxDigits:3];
+    [_bannerIdleDuration setDoubleValue:idleDuration ? [idleDuration doubleValue] : 5];
+    
+    NSNumber* exitStyle = [userDefaults objectForKey:@"exitAnimationStyle"];
+    [_exitAnimationStyle selectItemAtIndex:exitStyle ? [exitStyle integerValue] : 0];
+    [self changeExitAnimationStyle:_exitAnimationStyle];
+    
+    NSNumber* exitDuration = [userDefaults objectForKey:@"exitAnimationDuration"];
+    [_exitAnimationDuration setMaxDigits:4];
+    [_exitAnimationDuration setDoubleValue:exitDuration ? [exitDuration doubleValue] : 0.6];
+    
+    BOOL alwaysPulse = [userDefaults boolForKey:@"alwaysPulseIcon"] && [self OSIsMountainLion];
+    [_alwaysPulseIcon setState:alwaysPulse ? NSOnState : NSOffState];
+    
+    [_hideIcon setState:[userDefaults boolForKey:@"hideIcon"] ? NSOnState : NSOffState];
+    
+    [_fixGrowl setState:[userDefaults boolForKey:@"fixGrowl"] ? NSOnState : NSOffState];
+    [self changeGrowlCheckboxValue:_fixGrowl];
+    
+    [_removeAppName setState:[userDefaults boolForKey:@"removeAppName"] ? NSOnState : NSOffState];
+}
 
-@synthesize bannerIdleDuration;
+#pragma mark - UI Actions/Controls
 
-@synthesize exitAnimationStyle;
-@synthesize exitAnimationDuration;
+- (BOOL)applicationShouldHandleReopen:(NSApplication *)sender hasVisibleWindows:(BOOL)flag {
+    [_window makeKeyAndOrderFront:nil];
+    
+    return YES;
+}
 
-@synthesize fixGrowl;
-@synthesize removeAppName;
-
-- (void)applicationDidFinishLaunching:(NSNotification *)aNotification
-{
+- (void)activate {
+    [(NSApplication*)NSApp activateIgnoringOtherApps:YES];
 }
 
 - (IBAction)changeGrowlCheckboxValue:(id)sender {
-    [removeAppName setEnabled:[fixGrowl state]];
-    if (![removeAppName isEnabled]) [removeAppName setState:NSOffState];
+    [_removeAppName setEnabled:[_fixGrowl state]];
+    if (![_removeAppName isEnabled]) [_removeAppName setState:NSOffState];
 }
 
 - (IBAction)changeSliderValue:(id)sender {
     [[sender valueLabel] setStringValue:[sender formatString]];
 }
 
-- (IBAction)changeExitAnimationStyle:(id)sender {
-    if ([(NSPopUpButton*)sender indexOfSelectedItem] == 2)
+- (IBAction)changeEntryAnimationStyle:(id)sender {
+    if ([(NSPopUpButton*)sender indexOfSelectedItem] == 2) // No animation -> no duration
     {
-        [exitAnimationDuration setEnabled:NO];
-        [exitAnimationDuration setDoubleValue:0.25];
+        [_entryAnimationDuration setEnabled:NO];
+        [_entryAnimationDuration setDoubleValue:0];
     }
     else
-        [exitAnimationDuration setEnabled:YES];
+        [_entryAnimationDuration setEnabled:YES];
 }
 
-- (IBAction)apply:(id)sender {
-    if (DEBUG_ENABLED) NSLog(@"%@ user clicked Apply", isEasySIMBL?@"EasySIMBL":@"SIMBL");
-    
-    [sender setTarget:nil];
-    [sender setAction:nil];
-    [_progressIndicator setHidden:NO];
-    [_progressIndicator setDoubleValue:0];
-    
-    NSUserDefaults* userDefaults = [NSUserDefaults standardUserDefaults];
+- (IBAction)changeExitAnimationStyle:(id)sender {
+    if ([(NSPopUpButton*)sender indexOfSelectedItem] == 2 && [self OSIsMountainLion]) // Poof animation (in ML) duration can't be changed
+    {
+        [_exitAnimationDuration setEnabled:NO];
+        [_exitAnimationDuration setDoubleValue:0.25];
+    }
+    else if ([(NSPopUpButton*)sender indexOfSelectedItem] == 3) // No animation -> no duration
+    {
+        [_exitAnimationDuration setEnabled:NO];
+        [_exitAnimationDuration setDoubleValue:0];
+    }
+    else
+        [_exitAnimationDuration setEnabled:YES];
+}
 
-    [userDefaults setBool:[alwaysPulseIcon state] forKey:@"alwaysPulseIcon"];
-    [userDefaults setBool:[hideIcon state] forKey:@"hideIcon"];
+- (IBAction)defaults:(id)sender {
+    [_alwaysPulseIcon setState:NSOffState];
+    [_hideIcon setState:NSOffState];
+    
+    [_entryAnimationStyle selectItemAtIndex:0];
+    [_entryAnimationDuration setDoubleValue:0.7];
+    
+    [_bannerIdleDuration setDoubleValue:5];
+    
+    [_exitAnimationStyle selectItemAtIndex:0];
+    [_exitAnimationDuration setEnabled:YES];
+    [_exitAnimationDuration setDoubleValue:0.6];
+    
+    [_fixGrowl setState:NSOffState];
+    [self changeGrowlCheckboxValue:_fixGrowl];
+    
+    [_removeAppName setState:NSOffState];
+}
 
-    [userDefaults setInteger:[entryAnimationStyle indexOfSelectedItem] forKey:@"entryAnimationStyle"];
-    [userDefaults setDouble:[[entryAnimationDuration stringValue] doubleValue] forKey:@"entryAnimationDuration"];
+- (IBAction)uninstall:(id)sender {
+    NSFileManager* fileManager = [NSFileManager defaultManager];
     
-    [userDefaults setInteger:[exitAnimationStyle indexOfSelectedItem] forKey:@"exitAnimationStyle"];
-    [userDefaults setDouble:[[exitAnimationDuration stringValue] doubleValue] forKey:@"exitAnimationDuration"];
+    NSString* pluginsDirectory = [@"~/Library/Application Support/SIMBL/Plugins/" stringByExpandingTildeInPath];
+    NSString* destination = [NSString stringWithFormat:@"%@/CustomNC.bundle", pluginsDirectory];
     
-    [userDefaults setDouble:[[bannerIdleDuration stringValue] doubleValue] forKey:@"bannerIdleDuration"];
+    NSError* error = nil;
+    [fileManager removeItemAtPath:destination error:&error];
     
-    [userDefaults setBool:[fixGrowl state] forKey:@"fixGrowl"];
-    [userDefaults setBool:[removeAppName state] forKey:@"removeAppName"];
+    if (error)
+        [NSAlert alertWithError:error];
     
-    [userDefaults synchronize];
-    
-    [_progressIndicator incrementBy:10];
+    [self removeLoginItem];
     
     NSArray* runningNC = RUNNING_NC;
     
     if ([runningNC count] > 0)
-    {
         [(NSRunningApplication*)runningNC[0] terminate];
-        if (DEBUG_ENABLED) NSLog(@"Killed NC");
-        [_progressIndicator incrementBy:10];
-
-        double slept = 0;
-        
-        while ([RUNNING_NC count] == 0 && slept < 5)
-        {
-            sleep(1);
-            slept += 1;
-        }
-        
-        if ([RUNNING_NC count] == 0)
-        {
-            NSAlert* alert = [NSAlert alertWithMessageText:@"Uh oh. There seems to be a problem." defaultButton:@"Try later" alternateButton:@"" otherButton:@"" informativeTextWithFormat:@"Notification Center is not running. Please restart and try again."];
-            
-            [alert runModal];
-            
-            [NSApp terminate:self];
-        }
-        else
-        {
-            [_progressIndicator incrementBy:30];
-            [self performSelector:@selector(inject) withObject:nil afterDelay:2];
-        }
-    }
     
+    [fileManager trashItemAtURL:[NSURL URLWithString:[NSString stringWithFormat:@"file://%@", [[NSBundle mainBundle] bundlePath]]] resultingItemURL:nil error:&error];
+    
+    [NSApp terminate:self];
 }
 
-- (void)inject {    
-    if (isEasySIMBL)
-        [self easySIMBLInject];
-    else if (isSIMBL)
-        [self SIMBLInject];
+#pragma mark - Applying Settings
+
+- (IBAction)apply:(id)sender {
+    if (DEBUG_ENABLED) NSLog(@"%@ user clicked Apply", isEasySIMBL?@"EasySIMBL":@"SIMBL");
+
+    [_applyButton setTitle:@"Applying…"];
+    [_applyButton setEnabled:NO];
     
-    [NSTimer scheduledTimerWithTimeInterval:0.5 target:self selector:@selector(activate) userInfo:nil repeats:NO];
+    NSUserDefaults* userDefaults = [NSUserDefaults standardUserDefaults];
+
+    [userDefaults setBool:[_alwaysPulseIcon state] forKey:@"alwaysPulseIcon"];
+    [userDefaults setBool:[_hideIcon state] forKey:@"hideIcon"];
+
+    [userDefaults setInteger:[_entryAnimationStyle indexOfSelectedItem] forKey:@"entryAnimationStyle"];
+    [userDefaults setDouble:[[_entryAnimationDuration stringValue] doubleValue] forKey:@"entryAnimationDuration"];
+    
+    [userDefaults setInteger:[_exitAnimationStyle indexOfSelectedItem] forKey:@"exitAnimationStyle"];
+    [userDefaults setDouble:[[_exitAnimationDuration stringValue] doubleValue] forKey:@"exitAnimationDuration"];
+    
+    [userDefaults setDouble:[[_bannerIdleDuration stringValue] doubleValue] forKey:@"bannerIdleDuration"];
+
+    [userDefaults setBool:[_fixGrowl state] forKey:@"fixGrowl"];
+    [userDefaults setBool:[_removeAppName state] forKey:@"removeAppName"];
+    
+    [userDefaults synchronize];
+    
+    [[NSDistributedNotificationCenter defaultCenter] addObserver:self selector:@selector(updatedSettings:) name:@"CustomNCUpdatedSettings" object:nil];
+    [[NSDistributedNotificationCenter defaultCenter] postNotificationName:@"CustomNCUpdateSettings" object:nil];
+    
+    apply = [NSDate timeIntervalSinceReferenceDate];
+    [self performSelector:@selector(NCDidNotRespondToNotification) withObject:nil afterDelay:1.5];
 }
 
-- (void)easySIMBLInject {
-    if (DEBUG_ENABLED) NSLog(@"User has EasySIMBL, trying to kill the agent");
+- (void)updatedSettings:(NSNotification*)notification {
+    [_applyButton setTitle:@"Apply"];
+    [_applyButton setEnabled:YES];
     
-    NSArray* runningAgent = RUNNING_AGENT;
+    [[NSDistributedNotificationCenter defaultCenter] removeObserver:self name:@"CustomNCUpdatedSettings" object:nil];
     
-    if ([runningAgent count] > 0)
+    [self sendNotification];
+}
+
+- (void)NCDidNotRespondToNotification {
+    if (![_applyButton isEnabled] && ([NSDate timeIntervalSinceReferenceDate] - apply) > 1)
     {
-        NSString* agentPath = [[[(NSRunningApplication*)runningAgent[0] bundleURL] path] copy];
-        [(NSRunningApplication*)runningAgent[0] terminate];
+        NSLog(@"NCDidNotRespondToNotification");
+        apply = 0;
         
-        if (DEBUG_ENABLED) NSLog(@"Killed the agent @ %@", agentPath);
-        [_progressIndicator incrementBy:30];
+        [_applyButton setTitle:@"Installing…"];
+        [_applyButton setEnabled:NO];
         
-        int slept = 0;
+        [[NSDistributedNotificationCenter defaultCenter] removeObserver:self name:@"CustomNCUpdatedSettings" object:nil];
         
-        while ([RUNNING_AGENT count] > 0 && slept < 5)
-        {
-            sleep(1);
-            slept += 1;
-        }
-        
-        if ([RUNNING_AGENT count] == 0)
-        {
-            [[NSWorkspace sharedWorkspace] openFile:agentPath];
-            if (DEBUG_ENABLED) NSLog(@"Started the agent");
-            [_progressIndicator incrementBy:20];
-        }
-    }
-    else
-    {
-        NSAlert* alert = [NSAlert alertWithMessageText:@"Uh oh. There seems to be a problem." defaultButton:@"Try later" alternateButton:@"" otherButton:@"" informativeTextWithFormat:@"EasySIMBL's agent is not running. You'll have to restart for the changes to be effective."];
-        
-        [alert runModal];
+        [self restartNC];
     }
 }
 
-- (void)SIMBLInject {
-    if (DEBUG_ENABLED) NSLog(@"User has SIMBL, trying to start the injector");
-    
-    NSString* launcherPath = [[NSBundle mainBundle] pathForResource:@"CustomNCLauncher" ofType:@"app"];
-    
-    [[NSWorkspace sharedWorkspace] openFile:launcherPath];
-    
-    [_progressIndicator incrementBy:50];
-    if (DEBUG_ENABLED) NSLog(@"Told SIMBL to inject CustomNC");
-}
+#pragma mark - Installing CustomNC's SIMBL plug-in
 
 - (void)install {
     NSFileManager* fileManager = [NSFileManager defaultManager];
@@ -177,20 +234,20 @@
     NSString* SIMBLpath = @"/Library/ScriptingAdditions/SIMBL.osax";
     NSString* SIMBLuserPath = [@"~/Library/ScriptingAdditions/SIMBL.osax" stringByExpandingTildeInPath];
     NSString* easySIMBLpath = [@"~/Library/ScriptingAdditions/EasySIMBL.osax" stringByExpandingTildeInPath];
-
+    
     isSIMBL = [fileManager fileExistsAtPath:SIMBLpath isDirectory:&isDir] || [fileManager fileExistsAtPath:SIMBLuserPath isDirectory:&isDir];
     isEasySIMBL = [fileManager fileExistsAtPath:easySIMBLpath isDirectory:&isDir] || [RUNNING_AGENT count] > 0;
     
     if (DEBUG_ENABLED) NSLog(@"SIMBL: %@, EasySIMBL: %@", isSIMBL?@"YES":@"NO", isEasySIMBL?@"YES":@"NO");
-
+    
     if (!isSIMBL && !isEasySIMBL)
     {
-        NSAlert* alert = [NSAlert alertWithMessageText:@"CustomNC requires SIMBL to function" defaultButton:@"Take me there!" alternateButton:@"Cancel" otherButton:@"" informativeTextWithFormat:@"SIMBL is a transparent app that enables modifications like CustomNC. It's easy to install and doesn't need any setup.\n\nGet it on http://www.culater.net/software/SIMBL/SIMBL.php"];
+        NSAlert* alert = [NSAlert alertWithMessageText:@"CustomNC requires SIMBL or EasySIMBL to function" defaultButton:@"Take me there!" alternateButton:@"Cancel" otherButton:@"" informativeTextWithFormat:@"SIMBL is a transparent app that enables modifications like CustomNC. It's easy to install and doesn't need any setup.\n\nGet EasySIMBL at https://github.com/norio-nomura/EasySIMBL/#how-to-install"];
         
         NSInteger buttonClicked = [alert runModal];
         
         if (buttonClicked == 1)
-            [[NSWorkspace sharedWorkspace] openURL:[NSURL URLWithString:@"http://www.culater.net/software/SIMBL/SIMBL.php"]];
+            [[NSWorkspace sharedWorkspace] openURL:[NSURL URLWithString:@"https://github.com/norio-nomura/EasySIMBL/#how-to-install"]];
         
         [NSApp terminate:self];
     }
@@ -227,7 +284,7 @@
         if (error)
         {
             [[NSAlert alertWithError:error] runModal];
-            NSLog(@"Couldn't install CustomNC SIMBL plugin. Quitting...");
+            NSLog(@"Couldn't install CustomNC SIMBL plugin. Quitting…");
             [NSApp terminate:self];
         }
     }
@@ -249,88 +306,130 @@
         if (error)
         {
             [[NSAlert alertWithError:error] runModal];
-            NSLog(@"Couldn't install CustomNC SIMBL plugin. Quitting...");
+            NSLog(@"Couldn't install CustomNC SIMBL plugin. Quitting…");
             [NSApp terminate:self];
         }
         
         NSLog(@"Replaced CustomNC plugin with a newer version successfully.");
+        [_applyButton setTitle:@"Installing…"];
+        [_applyButton setEnabled:NO];
+        [self restartNC];
     }
 }
 
-- (IBAction)defaults:(id)sender {
-    [alwaysPulseIcon setState:NSOffState];
-    [hideIcon setState:NSOffState];
-    
-    [entryAnimationStyle selectItemAtIndex:0];
-    [entryAnimationDuration setDoubleValue:0.7];
-    
-    [bannerIdleDuration setDoubleValue:5];
-    
-    [exitAnimationStyle selectItemAtIndex:0];
-    [exitAnimationDuration setEnabled:YES];
-    [exitAnimationDuration setDoubleValue:0.6];
-    
-    [fixGrowl setState:NSOffState];
-    [self changeGrowlCheckboxValue:fixGrowl];
-    
-    [removeAppName setState:NSOffState];
-}
+#pragma mark - Reinjecting CustomNC
 
-- (IBAction)uninstall:(id)sender {
-    NSFileManager* fileManager = [NSFileManager defaultManager];
-
-    NSString* pluginsDirectory = [@"~/Library/Application Support/SIMBL/Plugins/" stringByExpandingTildeInPath];
-    NSString* destination = [NSString stringWithFormat:@"%@/CustomNC.bundle", pluginsDirectory];
-    
-    NSError* error = nil;
-    [fileManager removeItemAtPath:destination error:&error];
-    
-    if (error)
-        [NSAlert alertWithError:error];
-
-    [self removeLoginItem];
-    
+- (void)restartNC {
     NSArray* runningNC = RUNNING_NC;
     
     if ([runningNC count] > 0)
-        [(NSRunningApplication*)runningNC[0] terminate];
-    
-    [fileManager trashItemAtURL:[NSURL URLWithString:[NSString stringWithFormat:@"file://%@", [[NSBundle mainBundle] bundlePath]]] resultingItemURL:nil error:&error];
-    
-    [NSApp terminate:self];
-}
-
-- (void)addLoginItem {
-    if (![LoginItem loginItemExists])
-        [LoginItem addLoginItem];
-}
-
-- (void)removeLoginItem {
-    if ([LoginItem loginItemExists])
-        [LoginItem removeLoginItem];
-}
-
-- (IBAction)sendNotification:(id)sender {
-    NSUserNotification* notification = [[NSUserNotification alloc] init];
-    [notification setTitle:@"Test notification"];
-    [notification setSubtitle:@"Lorem Ipsum Dolor Sit Amet, Consectetur Adipiscing Elit"];
-    
-    NSString* informativeText = [NSString stringWithFormat:@"It's %@ now!", [[NSDate date] descriptionWithLocale:[NSLocale currentLocale]]];
-    [notification setInformativeText:informativeText];
-    
-    if ([RUNNING_NC count] > 0)
     {
-        [[RUNNING_NC objectAtIndex:0]  activateWithOptions:NSApplicationActivateAllWindows];
+        [(NSRunningApplication*)runningNC[0] terminate];
+        if (DEBUG_ENABLED) NSLog(@"Killed NC");
         
-        [self performSelector:@selector(notify:) withObject:notification afterDelay:0.3];
+        double slept = 0;
+        
+        while ([RUNNING_NC count] == 0 && slept < 5)
+        {
+            sleep(1);
+            slept += 1;
+        }
+        
+        if ([RUNNING_NC count] == 0)
+        {
+            NSAlert* alert = [NSAlert alertWithMessageText:@"Uh oh. There seems to be a problem." defaultButton:@"Try later" alternateButton:@"" otherButton:@"" informativeTextWithFormat:@"Notification Center is not running. Please restart and try again."];
+            
+            [alert runModal];
+            
+            [NSApp terminate:self];
+        }
+        else
+        {
+            [self performSelector:@selector(inject) withObject:nil afterDelay:2];
+        }
     }
 }
 
-- (void)notify:(NSUserNotification*)notification {
-    NSUserNotificationCenter* notificationCenter = [NSUserNotificationCenter defaultUserNotificationCenter];
-    [notificationCenter deliverNotification:notification];
-    [self performSelector:@selector(activate) withObject:nil afterDelay:0.3];
+- (void)inject {
+    if (isEasySIMBL)
+        [self easySIMBLInject];
+    else if (isSIMBL)
+        [self SIMBLInject];
+    
+    [_applyButton setTitle:@"Apply"];
+    [_applyButton setEnabled:YES];
+    
+    // Re-activate CustomNC because relaunching NotificationCenter would take focus away
+    [NSTimer scheduledTimerWithTimeInterval:0.5 target:self selector:@selector(activate) userInfo:nil repeats:NO];
 }
+
+- (void)easySIMBLInject {
+    if (DEBUG_ENABLED) NSLog(@"User has EasySIMBL, trying to kill the agent");
+    
+    NSArray* runningAgent = RUNNING_AGENT;
+    
+    if ([runningAgent count] > 0)
+    {
+        NSString* agentPath = [[[(NSRunningApplication*)runningAgent[0] bundleURL] path] copy];
+        [(NSRunningApplication*)runningAgent[0] terminate];
+        
+        if (DEBUG_ENABLED) NSLog(@"Killed the agent @ %@", agentPath);
+        
+        int slept = 0;
+        
+        while ([RUNNING_AGENT count] > 0 && slept < 5)
+        {
+            sleep(1);
+            slept += 1;
+        }
+        
+        if ([RUNNING_AGENT count] == 0)
+        {
+            [[NSWorkspace sharedWorkspace] openFile:agentPath];
+            if (DEBUG_ENABLED) NSLog(@"Started the agent");
+        }
+    }
+    else
+    {
+        NSAlert* alert = [NSAlert alertWithMessageText:@"Uh oh. There seems to be a problem." defaultButton:@"Try later" alternateButton:@"" otherButton:@"" informativeTextWithFormat:@"EasySIMBL's agent is not running. You'll have to restart for the changes to be effective."];
+        
+        [alert runModal];
+    }
+}
+
+- (void)SIMBLInject {
+    if (DEBUG_ENABLED) NSLog(@"User has SIMBL, trying to start the injector");
+    
+    NSString* launcherPath = [[NSBundle mainBundle] pathForResource:@"CustomNCLauncher" ofType:@"app"];
+    
+    [[NSWorkspace sharedWorkspace] openFile:launcherPath];
+
+    if (DEBUG_ENABLED) NSLog(@"Told SIMBL to inject CustomNC");
+}
+
+#pragma mark - Sending a Test Notification
+
+- (void)sendNotification {
+    NSUserNotification* notification = [[NSUserNotification alloc] init];
+    [notification setTitle:@"Settings applied."];
+    [notification setSubtitle:@"This is a test notification"];
+    
+    NSDateFormatter *format = [[NSDateFormatter alloc] init];
+    [format setDateFormat:@"HH:mm:ss"];
+
+    NSString* informativeText = [NSString stringWithFormat:@"It's %@ now!", [format stringFromDate:[NSDate date]]];
+    [notification setInformativeText:informativeText];
+    
+    NSUserNotificationCenter* notificationCenter = [NSUserNotificationCenter defaultUserNotificationCenter];
+    [notificationCenter setDelegate:(id<NSUserNotificationCenterDelegate>)self];
+    [notificationCenter deliverNotification:notification];
+}
+
+- (BOOL)userNotificationCenter:(NSUserNotificationCenter *)center shouldPresentNotification:(NSUserNotification *)notification {
+    return YES;
+}
+
+#pragma mark - Sending a Growl Test Notification
 
 - (IBAction)sendGrowlNotification:(id)sender {
     NSString* asSource = @"\
@@ -339,26 +438,26 @@
     end tell\n\
     \n\
     if isRunning then\n\
-        tell application id \"com.Growl.GrowlHelperApp\"\n\
-            set the allNotificationsList to ¬\n\
-                {\"Test Notification\"}\n\
-            \n\
-            set the enabledNotificationsList to ¬\n\
-                {\"Test Notification\"}\n\
-            \n\
-            \n\
-            register as application ¬\n\
-                \"CustomNC\" all notifications allNotificationsList ¬\n\
-                default notifications enabledNotificationsList ¬\n\
-                icon of application \"CustomNC\"\n\
-            \n\
-            \n\
-            notify with name ¬\n\
-                \"Test Notification\" title ¬\n\
-                \"Test Notification\" description ¬\n\
-                \"Lorem Ipsum Dolor Sit Amet, Consectetur Adipiscing Elit.\" application name \"CustomNC\"\n\
-            \n\
-        end tell\n\
+    tell application id \"com.Growl.GrowlHelperApp\"\n\
+    set the allNotificationsList to ¬\n\
+    {\"Test Notification\"}\n\
+    \n\
+    set the enabledNotificationsList to ¬\n\
+    {\"Test Notification\"}\n\
+    \n\
+    \n\
+    register as application ¬\n\
+    \"CustomNC\" all notifications allNotificationsList ¬\n\
+    default notifications enabledNotificationsList ¬\n\
+    icon of application \"CustomNC\"\n\
+    \n\
+    \n\
+    notify with name ¬\n\
+    \"Test Notification\" title ¬\n\
+    \"Test Notification\" description ¬\n\
+    \"Lorem Ipsum Dolor Sit Amet, Consectetur Adipiscing Elit.\" application name \"CustomNC\"\n\
+    \n\
+    end tell\n\
     end if";
     
     NSAppleScript* as = [[NSAppleScript alloc] initWithSource:asSource];
@@ -370,63 +469,23 @@
         NSLog(@"%@", error);
 }
 
-- (void)activate {
-    [(NSApplication*)NSApp activateIgnoringOtherApps:YES];
-    [_progressIndicator setHidden:YES];
-    [_applyButton setTarget:self];
-    [_applyButton setAction:@selector(apply:)];
+#pragma mark - Managing the login item to inject at startup
+// Applies to SIMBL users only. EasySIMBL users do not need this.
+
+- (void)addLoginItem {
+    if (![LoginItem loginItemExists])
+        [LoginItem addLoginItem];
 }
 
-- (void)awakeFromNib {
-    [entryAnimationDuration setAltIncrementValue:0.5];
-    [entryAnimationDuration setFormatString:@"%@ second%@"];
-    [bannerIdleDuration setAltIncrementValue:0.5];
-    [bannerIdleDuration setFormatString:@"approx. %@ second%@"];
-    [exitAnimationDuration setAltIncrementValue:0.5];
-    [exitAnimationDuration setFormatString:@"%@ second%@"];
-    
-    NSUserDefaults* userDefaults = [NSUserDefaults standardUserDefaults];
-    
-    [self install];
-    
-    if (!isEasySIMBL)
-        // SIMBL doesn't inject apps at user login
-        // so we have to do that with an automator workflow set as a login item
-        [self addLoginItem];
-    else
-        // EasySIMBL doesn't have such problems
-        [self removeLoginItem];
-    
-    NSNumber* entryDuration = [userDefaults objectForKey:@"entryAnimationDuration"];
-    [entryAnimationDuration setMaxDigits:4];
-    [entryAnimationDuration setDoubleValue:entryDuration?[entryDuration doubleValue]:0.7];
-    NSNumber* entryStyle = [userDefaults objectForKey:@"entryAnimationStyle"];
-    [entryAnimationStyle selectItemAtIndex:entryStyle?[entryStyle integerValue]:0];
-    
-    NSNumber* idleDuration = [userDefaults objectForKey:@"bannerIdleDuration"];
-    [bannerIdleDuration setMaxDigits:3];
-    [bannerIdleDuration setDoubleValue:idleDuration?[idleDuration doubleValue]:5];
-    
-    NSNumber* exitDuration = [userDefaults objectForKey:@"exitAnimationDuration"];
-    [exitAnimationDuration setMaxDigits:4];
-    [exitAnimationDuration setDoubleValue:exitDuration?[exitDuration doubleValue]:0.6];
-    NSNumber* exitStyle = [userDefaults objectForKey:@"exitAnimationStyle"];
-    [exitAnimationStyle selectItemAtIndex:exitStyle?[exitStyle integerValue]:0];
-    if ([exitAnimationStyle indexOfSelectedItem] == 2)
-        [exitAnimationDuration setEnabled:NO];
-    
-    BOOL alwaysPulse = [userDefaults objectForKey:@"alwaysPulseIcon"]?[[userDefaults objectForKey:@"alwaysPulseIcon"] boolValue]:NO;
-    [alwaysPulseIcon setState:alwaysPulse?NSOnState:NSOffState];
-    
-    BOOL hide = [userDefaults objectForKey:@"hideIcon"]?[[userDefaults objectForKey:@"hideIcon"] boolValue]:NO;
-    [hideIcon setState:hide?NSOnState:NSOffState];
-    
-    BOOL fixGrowlVal = [userDefaults objectForKey:@"fixGrowl"]?[[userDefaults objectForKey:@"fixGrowl"] boolValue]:NO;
-    [fixGrowl setState:fixGrowlVal?NSOnState:NSOffState];
-    [self changeGrowlCheckboxValue:fixGrowl];
-    
-    BOOL removeAppNameVal = [userDefaults objectForKey:@"removeAppName"]?[[userDefaults objectForKey:@"removeAppName"] boolValue]:NO;
-    [removeAppName setState:removeAppNameVal?NSOnState:NSOffState];
+- (void)removeLoginItem {
+    if ([LoginItem loginItemExists])
+        [LoginItem removeLoginItem];
+}
+
+#pragma mark - Getting the OS version
+
+- (BOOL)OSIsMountainLion {
+    return ![NSProcessInfo instancesRespondToSelector:@selector(endActivity:)];
 }
 
 @end

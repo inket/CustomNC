@@ -17,13 +17,13 @@
 	<key>CFBundlePackageType</key>
 	<string>BNDL</string>
 	<key>CFBundleShortVersionString</key>
-	<string>1.2</string>
+	<string>1.3</string>
 	<key>CFBundleSignature</key>
 	<string>????</string>
 	<key>CFBundleVersion</key>
-	<string>1.2</string>
+	<string>1.3</string>
 	<key>NSHumanReadableCopyright</key>
-	<string>Copyright © 2012-2013 inket. Licensed under GNU GPL v3.0. See LICENSE for details.</string>
+	<string>Copyright © 2012-2013 Mahdi Bchetnia.</string>
 	<key>NSPrincipalClass</key>
 	<string>CustomNC</string>
 	<key>SIMBLTargetApplications</key>

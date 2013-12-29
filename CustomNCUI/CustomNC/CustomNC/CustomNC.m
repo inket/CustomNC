@@ -2,20 +2,18 @@
 //  CustomNC.m
 //  CustomNC
 //
-//  Created by inket on 26/07/2012.
-//  Copyright (c) 2012-2013 inket. Licensed under GNU GPL v3.0. See LICENSE for details.
+//  Copyright (c) 2012-2013 Mahdi Bchetnia. Licensed under GNU GPL v3.0. See LICENSE for details.
 //
 
 #import "CustomNC.h"
 
 static CustomNC* plugin = nil;
 static BOOL customNCInstalled = NO;
-static NSDate* date = nil;
-static NSDate* date2 = nil;
-static NSDate* date3 = nil;
 static NSImage* currentAppIcon = nil;
 
+static BOOL hideIcon = NO;
 static BOOL alwaysPulseIcon = NO;
+static BOOL fixGrowl = NO;
 static BOOL removeAppName = YES;
 static double entryAnimationDuration = 0.7;
 static NSInteger entryAnimationStyle = 0;
@@ -25,36 +23,12 @@ static double bannerIdleDuration = 5;
 
 @implementation NSObject (CustomNC)
 
-#pragma mark Debug methods
-// *** Debug methods
-- (void)new_windowAnimateOutStart {
-    double timePassed_ms = [date2 timeIntervalSinceNow] * -1000.0;
-	NSLog(@"Stayed for: %f", timePassed_ms);
-    date3 = [NSDate date];
-    
-    [self new_windowAnimateOutStart];
-}
+#pragma mark - Entry animation
 
-- (void)new_windowAnimateOutComplete {
-    double timePassed_ms = [date3 timeIntervalSinceNow] * -1000.0;
-	NSLog(@"Out animation duration: %f", timePassed_ms);
-    
-    [self new_windowAnimateOutComplete];
-}
+#pragma mark -- OS X 10.8
 
-- (void)new_windowAnimateInComplete {
-    double timePassed_ms = [date timeIntervalSinceNow] * -1000.0;
-    NSLog(@"In animation duration: %lf", timePassed_ms);
-    date2 = [NSDate date];
-    
-    [self new_windowAnimateInComplete];
-}
-
-#pragma mark Entry animation
 // Entry animation style, duration and icon pulse
 - (void)new_animateInDrop:(id)arg1 duration:(double)arg2 {
-//    date = [NSDate date];
-    
     switch (entryAnimationStyle) {
         case 1: [(NCWindowLayoutController*)self animateInFade:arg1 duration:entryAnimationDuration]; break;
         default: [self new_animateInDrop:arg1 duration:entryAnimationDuration]; break;
@@ -63,7 +37,26 @@ static double bannerIdleDuration = 5;
     if (alwaysPulseIcon) [arg1 pulseIcon];
 }
 
-#pragma mark Idle duration
+#pragma mark -- OS X 10.9
+
+// Entry animation style
++ (id)new_animationInWithWindow:(id)arg1 delegate:(id)arg2 animation:(int)arg3 {
+    // CustomNCUI: 0 = Drop, 1 = Fade, 2 = None
+    // NotificationCenter: 0 = None, 1 = invalid, 2 = FadeIn, 3 = None, 4 = None, 5 = VerticalIn
+    
+    int style = arg3;
+    switch (entryAnimationStyle) {
+        case 0: style = 5; break;
+        case 1: style = 2; break;
+    }
+    
+    return [self new_animationInWithWindow:arg1 delegate:arg2 animation:style];
+}
+
+#pragma mark - Idle duration
+
+#pragma mark -- OS X 10.8
+
 // Changing the value for the banner idle duration
 - (void)new__presentBanner:(id)arg1 withUnpresentedCount:(unsigned long long)arg2 {
     if (!customNCInstalled)
@@ -75,7 +68,25 @@ static double bannerIdleDuration = 5;
     [self new__presentBanner:arg1 withUnpresentedCount:arg2];
 }
 
-#pragma mark Exit animation
+#pragma mark -- OS X 10.9
+
+// Banner idle duration
+- (double)new__displayTimeForModel:(id)arg1 {
+    double defaultDisplayTime = [self new__displayTimeForModel:arg1];
+    
+    // Default display time for banners is 5s.
+    // But since other types of notifications might get here, we let them keep their default display time as a precaution.
+    
+    if (defaultDisplayTime < 6) // It's a banner, change its display time.
+        return bannerIdleDuration+entryAnimationDuration;
+    else
+        return defaultDisplayTime;
+}
+
+#pragma mark - Exit animation
+
+#pragma mark -- OS X 10.8
+
 // Exit animation style and duration
 - (void)new_animateOutSlide:(id)arg1 duration:(double)arg2 {
     switch (exitAnimationStyle) {
@@ -85,10 +96,31 @@ static double bannerIdleDuration = 5;
     }
 }
 
-#pragma mark Hiding icon
+#pragma mark -- OS X 10.9
+
+// Exit animation style
++ (id)new_animationOutWithWindow:(id)arg1 delegate:(id)arg2 animation:(int)style {
+    // CustomNCUI: 0 = Slide, 1 = Fade, 2 = Raise, 3 = None
+    // NotificationCenter: 0 = None, 1 = invalid, 2 = FadeOut, 3 = PoofOut (doesn't work with banners), 4 = HorizontalOut, 5 = VerticalOut
+    
+    switch (exitAnimationStyle) {
+        case 0: style = 4; break;
+        case 1: style = 2; break;
+        case 2: style = 5; break;
+    }
+    
+    return [self new_animationOutWithWindow:arg1 delegate:arg2 animation:style];
+}
+
+#pragma mark - Hiding icon
+
+#pragma mark -- OS X 10.8
+
 // Hiding the icon
 - (void)new_loadView {
     [self new_loadView];
+    
+    if (!hideIcon) return;
     
     // Get the elements inside the notification
     NSTextField* bodyTF = (NSTextField*)[self performSelector:@selector(bodyTF)];
@@ -125,27 +157,91 @@ static double bannerIdleDuration = 5;
     [theView addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"V:[image(0)]" options:0 metrics:nil views:views]];
 }
 
+#pragma mark -- OS X 10.9
 
-#pragma mark Fixing Growl
+// Hiding the icon
+- (BOOL)new_updateBodyWidthConstraint {
+    BOOL result = [self new_updateBodyWidthConstraint];
+    
+    if (!hideIcon) return result;
+    
+    NSTextField* bodyTF = (NSTextField*)[self performSelector:@selector(bodyTF)];
+    NSView* scrollView = [[[bodyTF superview] superview] superview];
+    NSView* masterView = [scrollView superview];
+    
+    // Reduce scrollView's left margin from 46 to 7
+    NSLayoutConstraint* constraintToRemove = nil;
+    for (NSLayoutConstraint* constraint in [masterView constraints]) {
+        if ([constraint firstItem] == scrollView)
+        {
+            constraintToRemove = constraint;
+            break;
+        }
+    }
+    [masterView removeConstraint:constraintToRemove];
+    
+    NSArray* constraintsToAdd = [NSLayoutConstraint constraintsWithVisualFormat:@"H:|-(7)-[scrollView]"
+                                                                        options:0
+                                                                        metrics:nil
+                                                                          views:@{@"|": masterView, @"scrollView": scrollView}];
+    [masterView addConstraints:constraintsToAdd];
+    
+    // Resize the icon to 0x0 using constraints
+    NSImageView* identity = (NSImageView*)[[masterView subviews] objectAtIndex:0];
+    [identity removeConstraints:[identity constraints]];
+    NSDictionary* views = @{@"image": identity};
+    [identity addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"H:[image(0)]" options:0 metrics:nil views:views]];
+    [identity addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"V:[image(0)]" options:0 metrics:nil views:views]];
+    
+    return result;
+}
+
+- (void)new__setHorizontalMask {
+    [self new__setHorizontalMask];
+    
+    // Overwrite width with a hardcoded value :(
+    if (hideIcon)
+        [(NSView*)self setFrameSize:NSMakeSize(292, ((NSView*)self).frame.size.height)];
+}
+
+#pragma mark - OS X 10.9 Banner animations duration
+
+// Entry animation duration + Exit animation duration
+- (id)new_initWithWindow:(id)arg1 type:(int)arg2 delegate:(id)arg3 duration:(double)arg4 transitionType:(int)arg5 {
+    id result = nil;
+    
+    if (arg5 == 1) // Entry animation
+        result = [self new_initWithWindow:arg1 type:arg2 delegate:arg3 duration:entryAnimationDuration transitionType:arg5];
+    else // Exit animation
+        result = [self new_initWithWindow:arg1 type:arg2 delegate:arg3 duration:exitAnimationDuration transitionType:arg5];
+    
+    return result;
+}
+
+#pragma mark - Fixing Growl
+
 // Show app icon in Notification Center instead of Growl's and optionally remove the app name
 - (void)new_setNote:(NSUserNotification*)note {
-    if ([[[self performSelector:@selector(app)] performSelector:@selector(bundleIdentifier)] isEqualToString:@"com.Growl.GrowlHelperApp"]
-        && (!removeAppName || !([[note subtitle] isEqualToString:@""])))
+    if (fixGrowl)
     {
-        NSString* appName = [note title];
-        NSImage* newIcon = [plugin iconForAppName:appName];
-        NCAppInfo* app = [self performSelector:@selector(app)];
-        
-        NSString* varName = @"_image";
-        currentAppIcon = newIcon;
-        object_setIvar(app,
-                       class_getInstanceVariable([app class], [varName cStringUsingEncoding:NSUTF8StringEncoding]),
-                       currentAppIcon);
-        
-        if (removeAppName)
+        if ([[[self performSelector:@selector(app)] performSelector:@selector(bundleIdentifier)] isEqualToString:@"com.Growl.GrowlHelperApp"]
+            && (!removeAppName || !([[note subtitle] isEqualToString:@""])))
         {
-            [note setTitle:[note subtitle]];
-            [note setSubtitle:@""];
+            NSString* appName = [note title];
+            NSImage* newIcon = [plugin iconForAppName:appName];
+            NCAppInfo* app = [self performSelector:@selector(app)];
+            
+            NSString* varName = @"_image";
+            currentAppIcon = newIcon;
+            object_setIvar(app,
+                           class_getInstanceVariable([app class], [varName cStringUsingEncoding:NSUTF8StringEncoding]),
+                           currentAppIcon);
+            
+            if (removeAppName)
+            {
+                [note setTitle:[note subtitle]];
+                [note setSubtitle:@""];
+            }
         }
     }
     
@@ -156,7 +252,7 @@ static double bannerIdleDuration = 5;
 
 @implementation CustomNC
 
-#pragma mark SIMBL methods and loading
+#pragma mark - SIMBL methods and loading
 
 + (CustomNC*)sharedInstance {
 	if (plugin == nil)
@@ -167,14 +263,13 @@ static double bannerIdleDuration = 5;
 
 + (void)load {
 	[[CustomNC sharedInstance] loadPlugin];
+    [[NSDistributedNotificationCenter defaultCenter] addObserver:self selector:@selector(gotNewSettings:) name:@"CustomNCUpdateSettings" object:nil];
 	
 	NSLog(@"CustomNC loaded.");
+    [[NSDistributedNotificationCenter defaultCenter] postNotificationName:@"CustomNCInjected" object:nil];
 }
 
 + (void)set:(id)obj name:(NSString*)name val:(NSNumber*)val {
-    // Getting
-    id result = object_getIvar(obj, class_getInstanceVariable([obj class], [name cStringUsingEncoding:NSUTF8StringEncoding]));    
-    
     // Sanitize val for __NSTaggedDate (only accepts integers passed as double)
     NSString* stringVal = [val stringValue];
     double value = 5;
@@ -193,84 +288,85 @@ static double bannerIdleDuration = 5;
     
     // Setting
     object_setIvar(obj, class_getInstanceVariable([obj class], [name cStringUsingEncoding:NSUTF8StringEncoding]), r);
-
-    // Checking
-    result = object_getIvar(obj, class_getInstanceVariable([obj class], [name cStringUsingEncoding:NSUTF8StringEncoding]));
-//    NSLog(@"%@", result); // Debug
 }
 
 - (void)loadPlugin {
-    
-    // *** Getting the values
-    
+    [self reloadValues];
+    [self swizzle];
+}
+
+- (void)reloadValues {
     NSDictionary* userDefaults = [[[NSUserDefaults alloc] init] persistentDomainForName:@"me.inket.CustomNC"];
+
+    // Notification icon settings
     alwaysPulseIcon = [userDefaults objectForKey:@"alwaysPulseIcon"]?[[userDefaults objectForKey:@"alwaysPulseIcon"] boolValue]:NO;
-    BOOL hideIcon = [userDefaults objectForKey:@"hideIcon"]?[[userDefaults objectForKey:@"hideIcon"] boolValue]:NO;
+    hideIcon = [userDefaults objectForKey:@"hideIcon"]?[[userDefaults objectForKey:@"hideIcon"] boolValue]:NO;
     
-    BOOL fixGrowl = [userDefaults objectForKey:@"fixGrowl"]?[[userDefaults objectForKey:@"fixGrowl"] boolValue]:NO;
-    removeAppName = [userDefaults objectForKey:@"removeAppName"]?[[userDefaults objectForKey:@"removeAppName"] boolValue]:NO;
-    
+    // Notification entry animation settings
     entryAnimationStyle = [userDefaults objectForKey:@"entryAnimationStyle"]?[[userDefaults objectForKey:@"entryAnimationStyle"] integerValue]:0;
-    
-    BOOL alterEntryAnimationStyle = entryAnimationStyle == 0 ? NO : YES;
-    
-    
     entryAnimationDuration = [userDefaults objectForKey:@"entryAnimationDuration"]?[[userDefaults objectForKey:@"entryAnimationDuration"] doubleValue]:0.7;
-    
     if (entryAnimationDuration == 0)
         entryAnimationDuration = 0.001;
     
-    BOOL alterEntryAnimationDuration = entryAnimationDuration == 0.7 ? NO : YES;
+    // Notification idle settings
+    bannerIdleDuration = [userDefaults objectForKey:@"bannerIdleDuration"]?[[userDefaults objectForKey:@"bannerIdleDuration"] doubleValue]:5;
     
-
+    // Notification exit animation settings
     exitAnimationStyle = [userDefaults objectForKey:@"exitAnimationStyle"]?[[userDefaults objectForKey:@"exitAnimationStyle"] integerValue]:0;
-    
-    BOOL alterExitAnimationStyle = exitAnimationStyle == 0 ? NO : YES;
-    
-    
     exitAnimationDuration = [userDefaults objectForKey:@"exitAnimationDuration"]?[[userDefaults objectForKey:@"exitAnimationDuration"] doubleValue]:0.6;
-    
     if (exitAnimationDuration == 0)
         exitAnimationDuration = 0.001;
     
-    BOOL alterExitAnimationDuration = exitAnimationDuration == 0.6 ? NO : YES;
+    // Growl notifications settings
+    fixGrowl = [userDefaults objectForKey:@"fixGrowl"]?[[userDefaults objectForKey:@"fixGrowl"] boolValue]:NO;
+    removeAppName = [userDefaults objectForKey:@"removeAppName"]?[[userDefaults objectForKey:@"removeAppName"] boolValue]:NO;
     
-    
-    bannerIdleDuration = [userDefaults objectForKey:@"bannerIdleDuration"]?[[userDefaults objectForKey:@"bannerIdleDuration"] doubleValue]:5;
-    
-    BOOL alterBannerIdleDuration = bannerIdleDuration == 5 ? NO : YES;
-    
-    
-    // *** Start the swizzling
-    
-	Class class = NSClassFromString(@"NCNotificationWindow");
+    customNCInstalled = NO;
+}
 
-    // Debug
-//    [self swizzle:class method:@selector(windowAnimateOutStart)];
-//    [self swizzle:class method:@selector(windowAnimateOutComplete)];
-//    [self swizzle:class method:@selector(windowAnimateInComplete)];
+- (void)swizzle {
+    // Fixing Growl
+    [self swizzle:NSClassFromString(@"NCModel") method:@selector(setNote:)];
     
-    if (fixGrowl)
+    if ([self OSIsMountainLion])
     {
-        class = NSClassFromString(@"NCModel");
-        [self swizzle:class method:@selector(setNote:)];
-    }
-    
-    class = NSClassFromString(@"NCWindowLayoutController");
-    
-    if (alterExitAnimationDuration || alterExitAnimationStyle)
+        #pragma mark OS X 10.8-specific Swizzling
+        
+        Class class = NSClassFromString(@"NCWindowLayoutController");
+        
+        // Exit animation style & duration
         [self swizzle:class method:@selector(animateOutSlide:duration:)];
-    
-    if (alwaysPulseIcon || alterEntryAnimationDuration || alterEntryAnimationStyle)
+        
+        // Icon pulse + Entry animation style & duration
         [self swizzle:class method:@selector(animateInDrop:duration:)];
-    
-    if (alterBannerIdleDuration)
+        
+        // Banner idle duration
         [self swizzle:class method:@selector(_presentBanner:withUnpresentedCount:)];
-    
-    if (hideIcon)
+        
+        // Hiding the icon
+        [self swizzle:NSClassFromString(@"NCBannerViewController") method:@selector(loadView)];
+    }
+    else
     {
-        class = NSClassFromString(@"NCBannerViewController");
-        [self swizzle:class method:@selector(loadView)];
+        #pragma mark OS X 10.9-specific Swizzling
+        
+        Class class = NSClassFromString(@"NCBannerAnimation");
+        
+        // Entry animation style
+        [self swizzle:class classMethod:@selector(animationInWithWindow:delegate:animation:)];
+
+        // Exit animation style
+        [self swizzle:class classMethod:@selector(animationOutWithWindow:delegate:animation:)];
+        
+        // Entry animation duration + Exit animation duration
+        [self swizzle:class method:@selector(initWithWindow:type:delegate:duration:transitionType:)];
+        
+        // Banner idle duration
+        [self swizzle:NSClassFromString(@"NCWindowLayoutController") method:@selector(_displayTimeForModel:)];
+        
+        // Hiding the icon
+        [self swizzle:NSClassFromString(@"NCBannerViewController") method:@selector(updateBodyWidthConstraint)];
+        [self swizzle:NSClassFromString(@"NCAlertScrollView") method:@selector(_setHorizontalMask)];
     }
 }
 
@@ -280,7 +376,16 @@ static double bannerIdleDuration = 5;
     Method new = class_getInstanceMethod(class, newSelector);
 	Method old = class_getInstanceMethod(class, oldSelector);
     
-    method_exchangeImplementations(new, old);
+    method_exchangeImplementations(old, new);
+}
+
+- (void)swizzle:(Class)class classMethod:(SEL)oldSelector {
+    SEL newSelector = NSSelectorFromString([NSString stringWithFormat:@"new_%@", NSStringFromSelector(oldSelector)]);
+
+    Method new = class_getClassMethod(class, newSelector);
+	Method old = class_getClassMethod(class, oldSelector);
+    
+    method_exchangeImplementations(old, new);
 }
 
 - (NSImage*)iconForAppName:(NSString *)appName {
@@ -294,6 +399,16 @@ static double bannerIdleDuration = 5;
     
     NSImage* icon = [workspace iconForFile:appPath];
     return icon ? icon : nil;
+}
+
+- (BOOL)OSIsMountainLion {
+    return ![NSProcessInfo instancesRespondToSelector:@selector(endActivity:)];
+}
+
++ (void)gotNewSettings:(NSNotification*)notification {
+    [[self sharedInstance] reloadValues];
+    NSLog(@"Updated CustomNC settings.");
+    [[NSDistributedNotificationCenter defaultCenter] postNotificationName:@"CustomNCUpdatedSettings" object:nil];
 }
 
 @end

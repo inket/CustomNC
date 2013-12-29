@@ -99,26 +99,11 @@
     [[sender valueLabel] setStringValue:[sender formatString]];
 }
 
-- (IBAction)changeEntryAnimationStyle:(id)sender {
-    if ([(NSPopUpButton*)sender indexOfSelectedItem] == 2) // No animation -> no duration
-    {
-        [_entryAnimationDuration setEnabled:NO];
-        [_entryAnimationDuration setDoubleValue:0];
-    }
-    else
-        [_entryAnimationDuration setEnabled:YES];
-}
-
 - (IBAction)changeExitAnimationStyle:(id)sender {
     if ([(NSPopUpButton*)sender indexOfSelectedItem] == 2 && [self OSIsMountainLion]) // Poof animation (in ML) duration can't be changed
     {
         [_exitAnimationDuration setEnabled:NO];
         [_exitAnimationDuration setDoubleValue:0.25];
-    }
-    else if ([(NSPopUpButton*)sender indexOfSelectedItem] == 3) // No animation -> no duration
-    {
-        [_exitAnimationDuration setEnabled:NO];
-        [_exitAnimationDuration setDoubleValue:0];
     }
     else
         [_exitAnimationDuration setEnabled:YES];

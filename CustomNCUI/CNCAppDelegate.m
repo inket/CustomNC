@@ -28,12 +28,18 @@
         [_alwaysPulseIcon setEnabled:NO];
     }
     
+    // Recreate the entry animation styles list, taking into account the OS version
+    NSMenu* entryMenu = [[NSMenu alloc] init];
+    [entryMenu addItemWithTitle:[self OSIsYosemiteOrHigher] ? @"Slide" : @"Drop" action:nil keyEquivalent:@""];
+    [entryMenu addItemWithTitle:@"Fade" action:nil keyEquivalent:@""];
+    [_entryAnimationStyle setMenu:entryMenu];
+    
     // Recreate the exit animation styles list, taking into account the OS version
-    NSMenu* menu = [[NSMenu alloc] init];
-    [menu addItemWithTitle:@"Slide" action:nil keyEquivalent:@""];
-    [menu addItemWithTitle:@"Fade" action:nil keyEquivalent:@""];
-    [menu addItemWithTitle:[self OSIsMountainLion] ? @"Poof" : @"Raise" action:nil keyEquivalent:@""];
-    [_exitAnimationStyle setMenu:menu];
+    NSMenu* exitMenu = [[NSMenu alloc] init];
+    [exitMenu addItemWithTitle:@"Slide" action:nil keyEquivalent:@""];
+    [exitMenu addItemWithTitle:@"Fade" action:nil keyEquivalent:@""];
+    [exitMenu addItemWithTitle:[self OSIsMountainLion] ? @"Poof" : @"Raise" action:nil keyEquivalent:@""];
+    [_exitAnimationStyle setMenu:exitMenu];
     
     [self install]; // Install/update plug-in if necessary
     

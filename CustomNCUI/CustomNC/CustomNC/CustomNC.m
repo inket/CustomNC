@@ -37,12 +37,14 @@ static double bannerIdleDuration = 5;
     if (alwaysPulseIcon) [arg1 pulseIcon];
 }
 
-#pragma mark -- OS X 10.9
+#pragma mark -- OS X 10.9 & OS X 10.10
 
 // Entry animation style
 + (id)new_animationInWithWindow:(id)arg1 delegate:(id)arg2 animation:(int)arg3 {
-    // CustomNCUI: 0 = Drop, 1 = Fade, 2 = None
-    // NotificationCenter: 0 = None, 1 = invalid, 2 = FadeIn, 3 = None, 4 = None, 5 = VerticalIn
+    // CustomNCUI on 10.9: 0 = Drop, 1 = Fade, 2 = None
+    // CustomNCUI on 10.10: 0 = Slide, 1 = Fade, 2 = None
+    // NotificationCenter 10.9: 0 = None, 1 = invalid, 2 = FadeIn, 3 = None, 4 = None, 5 = VerticalIn
+    // NotificationCenter 10.10: 0 = None, 1 = invalid, 2 = FadeIn, 3 = None, 4 = None, 5 = HorizontalIn
     
     int style = arg3;
     switch (entryAnimationStyle) {

@@ -273,32 +273,40 @@
             [NSApp terminate:self];
         }
     }
-    else if (newPluginVersion != pluginVersion)
+    else
     {
-        NSError* error = nil;
-        [fileManager removeItemAtPath:destination error:&error];
+        BOOL differentVersion = newPluginVersion != pluginVersion;
+#ifdef DEBUG
+        differentVersion = YES;
+#endif
         
-        if (error)
+        if (differentVersion)
         {
-            [[NSAlert alertWithError:error] runModal];
-            NSLog(@"Couldn't replace CustomNC plugin @ %@ with a newer version", destination);
-            [NSApp terminate:self];
+            NSError* error = nil;
+            [fileManager removeItemAtPath:destination error:&error];
+            
+            if (error)
+            {
+                [[NSAlert alertWithError:error] runModal];
+                NSLog(@"Couldn't replace CustomNC plugin @ %@ with a newer version", destination);
+                [NSApp terminate:self];
+            }
+            
+            error = nil;
+            [fileManager copyItemAtPath:pluginPath toPath:destination error:&error];
+            
+            if (error)
+            {
+                [[NSAlert alertWithError:error] runModal];
+                NSLog(@"Couldn't install CustomNC SIMBL plugin. Quitting…");
+                [NSApp terminate:self];
+            }
+            
+            NSLog(@"Replaced CustomNC plugin with a newer version successfully.");
+            [_applyButton setTitle:@"Installing…"];
+            [_applyButton setEnabled:NO];
+            [self restartNC];
         }
-        
-        error = nil;
-        [fileManager copyItemAtPath:pluginPath toPath:destination error:&error];
-        
-        if (error)
-        {
-            [[NSAlert alertWithError:error] runModal];
-            NSLog(@"Couldn't install CustomNC SIMBL plugin. Quitting…");
-            [NSApp terminate:self];
-        }
-        
-        NSLog(@"Replaced CustomNC plugin with a newer version successfully.");
-        [_applyButton setTitle:@"Installing…"];
-        [_applyButton setEnabled:NO];
-        [self restartNC];
     }
 }
 

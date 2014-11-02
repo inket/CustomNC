@@ -405,6 +405,14 @@ static double bannerIdleDuration = 5;
     return ![NSProcessInfo instancesRespondToSelector:@selector(endActivity:)];
 }
 
+- (BOOL)OSIsMavericks {
+    return ![self OSIsMavericks] && ![self OSIsYosemiteOrHigher];
+}
+
+- (BOOL)OSIsYosemiteOrHigher {
+    return [NSProcessInfo instancesRespondToSelector:@selector(isOperatingSystemAtLeastVersion:)];
+}
+
 + (void)gotNewSettings:(NSNotification*)notification {
     [[self sharedInstance] reloadValues];
     NSLog(@"Updated CustomNC settings.");

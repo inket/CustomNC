@@ -481,4 +481,12 @@
     return ![NSProcessInfo instancesRespondToSelector:@selector(endActivity:)];
 }
 
+- (BOOL)OSIsMavericks {
+    return ![self OSIsMavericks] && ![self OSIsYosemiteOrHigher];
+}
+
+- (BOOL)OSIsYosemiteOrHigher {
+    return [NSProcessInfo instancesRespondToSelector:@selector(isOperatingSystemAtLeastVersion:)];
+}
+
 @end

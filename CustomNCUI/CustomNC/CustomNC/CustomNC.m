@@ -408,7 +408,7 @@ static double bannerIdleDuration = 5;
 }
 
 - (BOOL)OSIsMavericks {
-    return ![self OSIsMavericks] && ![self OSIsYosemiteOrHigher];
+    return ![self OSIsMountainLion] && ![self OSIsYosemiteOrHigher];
 }
 
 - (BOOL)OSIsYosemiteOrHigher {

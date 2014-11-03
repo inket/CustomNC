@@ -85,6 +85,19 @@ static double bannerIdleDuration = 5;
         return defaultDisplayTime;
 }
 
+#pragma mark -- OS X 10.10
+
+// Banner idle duration
+- (void)new__displayNotification:(id)arg1 forApplication:(id)arg2 withUnpresentedCount:(unsigned long long)arg3 animation:(int)arg4 {
+    if (!customNCInstalled)
+    {
+        [CustomNC set:self name:@"_bannerTime" val:[NSNumber numberWithDouble:bannerIdleDuration+entryAnimationDuration]];
+        customNCInstalled = YES;
+    }
+    
+    [self new__displayNotification:arg1 forApplication:arg2 withUnpresentedCount:arg3 animation:4];
+}
+
 #pragma mark - Exit animation
 
 #pragma mark -- OS X 10.8
@@ -350,7 +363,7 @@ static double bannerIdleDuration = 5;
     }
     else
     {
-        #pragma mark OS X 10.9-specific Swizzling
+        #pragma mark OS X 10.9+ Swizzling
         
         Class class = NSClassFromString(@"NCBannerAnimation");
         
@@ -364,7 +377,16 @@ static double bannerIdleDuration = 5;
         [self swizzle:class method:@selector(initWithWindow:type:delegate:duration:transitionType:)];
         
         // Banner idle duration
-        [self swizzle:NSClassFromString(@"NCWindowLayoutController") method:@selector(_displayTimeForModel:)];
+        if ([self OSIsMavericks])
+        {
+            [self swizzle:NSClassFromString(@"NCWindowLayoutController")
+                   method:@selector(_displayTimeForModel:)];
+        }
+        else
+        {
+            [self swizzle:NSClassFromString(@"NCWindowLayoutController")
+                   method:@selector(_displayNotification:forApplication:withUnpresentedCount:animation:)];
+        }
         
         // Hiding the icon
         [self swizzle:NSClassFromString(@"NCBannerViewController") method:@selector(updateBodyWidthConstraint)];

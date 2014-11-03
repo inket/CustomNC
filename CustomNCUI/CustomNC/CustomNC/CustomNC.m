@@ -211,6 +211,71 @@ static double bannerIdleDuration = 5;
     return result;
 }
 
+#pragma mark -- OS X 10.10
+
+// Hiding the icon
+- (BOOL)new_yosemite_updateBodyWidthConstraint {
+    BOOL result = [self new_yosemite_updateBodyWidthConstraint];
+    
+    if (!hideIcon) return result;
+    
+    NSView* bodyTFContainer = ((NSTextField*)[self performSelector:@selector(bodyTF)]).superview;
+    NSView* scrollView = bodyTFContainer.superview.superview;
+    NSView* underMasterView = scrollView.superview;
+    NSView* masterView = scrollView.superview.superview;
+    
+    // Reduce scrollView's left margin from 46 to 7
+    NSLayoutConstraint* constraintToRemove = nil;
+    for (NSLayoutConstraint* constraint in masterView.constraints) {
+        if (constraint.firstItem == scrollView)
+        {
+            constraintToRemove = constraint;
+            break;
+        }
+    }
+    [masterView removeConstraint:constraintToRemove];
+    
+    NSArray* constraintsToAdd = [NSLayoutConstraint constraintsWithVisualFormat:@"H:|-(7)-[scrollView]"
+                                                                        options:0
+                                                                        metrics:nil
+                                                                          views:@{@"|": masterView, @"scrollView": scrollView}];
+    [masterView addConstraints:constraintsToAdd];
+    
+    
+    // Replace the notification title's constraint
+    for (NSView* subview in underMasterView.subviews) {
+        if ([subview isKindOfClass:NSClassFromString(@"NCFadedClipView")])
+        {
+            NSView* fadedClipView = subview;
+            NSArray* newConstraint = [NSLayoutConstraint constraintsWithVisualFormat:@"H:|-(11)-[NCFadedClipView]"
+                                                                             options:0
+                                                                             metrics:nil
+                                                                               views:@{@"|": underMasterView, @"NCFadedClipView": fadedClipView}];
+            [underMasterView addConstraints:newConstraint];
+            
+            break;
+        }
+    }
+    
+    for (NSView* subview in masterView.subviews) {
+        if ([subview isKindOfClass:NSClassFromString(@"NCIdentityImageView")])
+        {
+            // Resize the icon to 0x0 using constraints
+            NSImageView* identity = (NSImageView*)subview;
+            NSLog(@"identity: %@", identity);
+            [identity removeConstraints:[identity constraints]];
+            NSDictionary* views = @{@"image": identity};
+            [identity addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"H:[image(0)]" options:0 metrics:nil views:views]];
+            [identity addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"V:[image(0)]" options:0 metrics:nil views:views]];
+            break;
+        }
+    }
+    
+    return result;
+}
+
+#pragma mark -- OS X 10.9 & OS X 10.10
+
 - (void)new__setHorizontalMask {
     [self new__setHorizontalMask];
     
@@ -389,9 +454,25 @@ static double bannerIdleDuration = 5;
         }
         
         // Hiding the icon
-        [self swizzle:NSClassFromString(@"NCBannerViewController") method:@selector(updateBodyWidthConstraint)];
+        if ([self OSIsMavericks])
+        {
+            [self swizzle:NSClassFromString(@"NCBannerViewController") method:@selector(updateBodyWidthConstraint)];
+        }
+        else
+        {
+            [self swizzle:NSClassFromString(@"NCBannerViewController") method:@selector(updateBodyWidthConstraint) prefix:@"yosemite"];
+        }
         [self swizzle:NSClassFromString(@"NCAlertScrollView") method:@selector(_setHorizontalMask)];
     }
+}
+
+- (void)swizzle:(Class)class method:(SEL)oldSelector prefix:(NSString*)prefix {
+    SEL newSelector = NSSelectorFromString([NSString stringWithFormat:@"new_%@_%@", prefix, NSStringFromSelector(oldSelector)]);
+    
+    Method new = class_getInstanceMethod(class, newSelector);
+    Method old = class_getInstanceMethod(class, oldSelector);
+    
+    method_exchangeImplementations(old, new);
 }
 
 - (void)swizzle:(Class)class method:(SEL)oldSelector {

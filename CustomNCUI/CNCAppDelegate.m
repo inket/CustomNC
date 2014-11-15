@@ -2,7 +2,7 @@
 //  CNCAppDelegate.m
 //  CustomNCUI
 //
-//  Copyright (c) 2012-2013 Mahdi Bchetnia. Licensed under GNU GPL v3.0. See LICENSE for details.
+//  Copyright (c) 2012-2014 Mahdi Bchetnia. Licensed under GNU GPL v3.0. See LICENSE for details.
 //
 
 #import "CNCAppDelegate.h"

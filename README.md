@@ -1,6 +1,6 @@
 ## CustomNC
 
-![](http://i.imgur.com/bw3erB3.png)
+<img src="http://i.imgur.com/TEbshov.png" align="center" height="676" width="542" >
 
 **Original description**
 
@@ -20,6 +20,10 @@ Apple changed LOTS of things in Notification Center with Mavericks. As you can s
 
 Please note that the icon pulse and the Poof exit animation options were removed/disabled from Notification Center and can't be selected in CustomNC anymore. On the upper hand, they gave us a new exit animation, "Raise", which is pretty cool.
 
+**Yosemite update**
+
+Apple didn't change much so updating the app was pretty easy and straightforward but this time around they took away the "Raise" animation and put back "Poof". Why can't we have both ?
+
 #### Requirements
 
 - SIMBL or [EasySIMBL](https://github.com/norio-nomura/EasySIMBL/#how-to-install)
@@ -29,6 +33,9 @@ Please note that the icon pulse and the Poof exit animation options were removed
 [Download here!](https://github.com/inket/CustomNC/releases)
 
 #### Changelog
+
+###### 1.4
+- Added support for Yosemite.
 
 ###### 1.3
 - Added support for Mavericks.

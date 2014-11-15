@@ -44,7 +44,7 @@ static double bannerIdleDuration = 5;
     // CustomNCUI on 10.9: 0 = Drop, 1 = Fade, 2 = None
     // CustomNCUI on 10.10: 0 = Slide, 1 = Fade, 2 = None
     // NotificationCenter 10.9: 0 = None, 1 = invalid, 2 = FadeIn, 3 = None, 4 = None, 5 = VerticalIn
-    // NotificationCenter 10.10: 0 = None, 1 = invalid, 2 = FadeIn, 3 = None, 4 = None, 5 = HorizontalIn
+    // NotificationCenter 10.10: 0 = invalid, 1 = invalid, 2 = FadeIn, 3 = invalid, 4 = invalid, 5 = HorizontalIn
     
     int style = arg3;
     switch (entryAnimationStyle) {
@@ -115,16 +115,34 @@ static double bannerIdleDuration = 5;
 
 // Exit animation style
 + (id)new_animationOutWithWindow:(id)arg1 delegate:(id)arg2 animation:(int)style {
-    // CustomNCUI: 0 = Slide, 1 = Fade, 2 = Raise, 3 = None
-    // NotificationCenter: 0 = None, 1 = invalid, 2 = FadeOut, 3 = PoofOut (doesn't work with banners), 4 = HorizontalOut, 5 = VerticalOut
+    // CustomNCUI on 10.9: 0 = Slide, 1 = Fade, 2 = Raise, 3 = None
+    // NotificationCenter 10.9: 0 = None, 1 = invalid, 2 = FadeOut, 3 = PoofOut (doesn't work with banners), 4 = HorizontalOut, 5 = VerticalOut
     
     switch (exitAnimationStyle) {
         case 0: style = 4; break;
         case 1: style = 2; break;
         case 2: style = 5; break;
+        case 3: style = 0; break;
     }
     
     return [self new_animationOutWithWindow:arg1 delegate:arg2 animation:style];
+}
+
+#pragma mark -- OS X 10.10
+
+// Exit animation style
++ (id)new_yosemite_animationOutWithWindow:(id)arg1 delegate:(id)arg2 animation:(int)style {
+    // CustomNCUI on 10.10: 0 = Slide, 1 = Fade, 2 = Poof, 3 = None
+    // NotificationCenter 10.10: 0 = None, 1 = invalid, 2 = FadeOut, 3 = invalid, 4 = PoofOut, 5 = HorizontalOut
+    
+    switch (exitAnimationStyle) {
+        case 0: style = 5; break;
+        case 1: style = 2; break;
+        case 2: style = 4; break;
+        case 3: style = 0; break;
+    }
+    
+    return [self new_yosemite_animationOutWithWindow:arg1 delegate:arg2 animation:style];
 }
 
 #pragma mark - Hiding icon
@@ -436,7 +454,14 @@ static double bannerIdleDuration = 5;
         [self swizzle:class classMethod:@selector(animationInWithWindow:delegate:animation:)];
 
         // Exit animation style
-        [self swizzle:class classMethod:@selector(animationOutWithWindow:delegate:animation:)];
+        if ([self OSIsMavericks])
+        {
+            [self swizzle:class classMethod:@selector(animationOutWithWindow:delegate:animation:)];
+        }
+        else
+        {
+            [self swizzle:class classMethod:@selector(animationOutWithWindow:delegate:animation:) prefix:@"yosemite"];
+        }
         
         // Entry animation duration + Exit animation duration
         [self swizzle:class method:@selector(initWithWindow:type:delegate:duration:transitionType:)];
@@ -480,6 +505,15 @@ static double bannerIdleDuration = 5;
     
     Method new = class_getInstanceMethod(class, newSelector);
 	Method old = class_getInstanceMethod(class, oldSelector);
+    
+    method_exchangeImplementations(old, new);
+}
+
+- (void)swizzle:(Class)class classMethod:(SEL)oldSelector prefix:(NSString*)prefix {
+    SEL newSelector = NSSelectorFromString([NSString stringWithFormat:@"new_%@_%@", prefix, NSStringFromSelector(oldSelector)]);
+    
+    Method new = class_getClassMethod(class, newSelector);
+    Method old = class_getClassMethod(class, oldSelector);
     
     method_exchangeImplementations(old, new);
 }

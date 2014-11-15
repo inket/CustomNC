@@ -38,7 +38,8 @@
     NSMenu* exitMenu = [[NSMenu alloc] init];
     [exitMenu addItemWithTitle:@"Slide" action:nil keyEquivalent:@""];
     [exitMenu addItemWithTitle:@"Fade" action:nil keyEquivalent:@""];
-    [exitMenu addItemWithTitle:[self OSIsMountainLion] ? @"Poof" : @"Raise" action:nil keyEquivalent:@""];
+    [exitMenu addItemWithTitle:([self OSIsMavericks] ? @"Raise" : @"Poof") action:nil keyEquivalent:@""];
+    [exitMenu addItemWithTitle:@"None" action:nil keyEquivalent:@""];
     [_exitAnimationStyle setMenu:exitMenu];
     
     [self install]; // Install/update plug-in if necessary

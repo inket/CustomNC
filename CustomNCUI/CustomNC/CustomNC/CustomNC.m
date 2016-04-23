@@ -2,7 +2,7 @@
 //  CustomNC.m
 //  CustomNC
 //
-//  Copyright (c) 2012-2014 Mahdi Bchetnia. Licensed under GNU GPL v3.0. See LICENSE for details.
+//  Copyright (c) 2012-2016 Mahdi Bchetnia. Licensed under GNU GPL v3.0. See LICENSE for details.
 //
 
 #import "CustomNC.h"
@@ -25,19 +25,7 @@ static double bannerIdleDuration = 5;
 
 #pragma mark - Entry animation
 
-#pragma mark -- OS X 10.8
-
-// Entry animation style, duration and icon pulse
-- (void)new_animateInDrop:(id)arg1 duration:(double)arg2 {
-    switch (entryAnimationStyle) {
-        case 1: [(NCWindowLayoutController*)self animateInFade:arg1 duration:entryAnimationDuration]; break;
-        default: [self new_animateInDrop:arg1 duration:entryAnimationDuration]; break;
-    }
-    
-    if (alwaysPulseIcon) [arg1 pulseIcon];
-}
-
-#pragma mark -- OS X 10.9 & OS X 10.10
+#pragma mark -- OS X 10.9+
 
 // Entry animation style
 + (id)new_animationInWithWindow:(id)arg1 delegate:(id)arg2 animation:(int)arg3 {
@@ -57,35 +45,7 @@ static double bannerIdleDuration = 5;
 
 #pragma mark - Idle duration
 
-#pragma mark -- OS X 10.8
-
-// Changing the value for the banner idle duration
-- (void)new__presentBanner:(id)arg1 withUnpresentedCount:(unsigned long long)arg2 {
-    if (!customNCInstalled)
-    {
-        [CustomNC set:self name:@"_bannerTime" val:[NSNumber numberWithDouble:bannerIdleDuration+entryAnimationDuration]];
-        customNCInstalled = YES;
-    }
-    
-    [self new__presentBanner:arg1 withUnpresentedCount:arg2];
-}
-
-#pragma mark -- OS X 10.9
-
-// Banner idle duration
-- (double)new__displayTimeForModel:(id)arg1 {
-    double defaultDisplayTime = [self new__displayTimeForModel:arg1];
-    
-    // Default display time for banners is 5s.
-    // But since other types of notifications might get here, we let them keep their default display time as a precaution.
-    
-    if (defaultDisplayTime < 6) // It's a banner, change its display time.
-        return bannerIdleDuration+entryAnimationDuration;
-    else
-        return defaultDisplayTime;
-}
-
-#pragma mark -- OS X 10.10
+#pragma mark -- OS X 10.10+
 
 // Banner idle duration
 - (void)new__displayNotification:(id)arg1 forApplication:(id)arg2 withUnpresentedCount:(unsigned long long)arg3 animation:(int)arg4 {
@@ -100,38 +60,10 @@ static double bannerIdleDuration = 5;
 
 #pragma mark - Exit animation
 
-#pragma mark -- OS X 10.8
-
-// Exit animation style and duration
-- (void)new_animateOutSlide:(id)arg1 duration:(double)arg2 {
-    switch (exitAnimationStyle) {
-        case 1: [(NCWindowLayoutController*)self animateOutFade:arg1 duration:exitAnimationDuration]; break;
-        case 2: [(NCWindowLayoutController*)self _animateAlertOff:arg1 poof:YES slide:NO]; break;
-        default: [self new_animateOutSlide:arg1 duration:exitAnimationDuration]; break;
-    }
-}
-
-#pragma mark -- OS X 10.9
+#pragma mark -- OS X 10.10+
 
 // Exit animation style
 + (id)new_animationOutWithWindow:(id)arg1 delegate:(id)arg2 animation:(int)style {
-    // CustomNCUI on 10.9: 0 = Slide, 1 = Fade, 2 = Raise, 3 = None
-    // NotificationCenter 10.9: 0 = None, 1 = invalid, 2 = FadeOut, 3 = PoofOut (doesn't work with banners), 4 = HorizontalOut, 5 = VerticalOut
-    
-    switch (exitAnimationStyle) {
-        case 0: style = 4; break;
-        case 1: style = 2; break;
-        case 2: style = 5; break;
-        case 3: style = 0; break;
-    }
-    
-    return [self new_animationOutWithWindow:arg1 delegate:arg2 animation:style];
-}
-
-#pragma mark -- OS X 10.10
-
-// Exit animation style
-+ (id)new_yosemite_animationOutWithWindow:(id)arg1 delegate:(id)arg2 animation:(int)style {
     // CustomNCUI on 10.10: 0 = Slide, 1 = Fade, 2 = Poof, 3 = None
     // NotificationCenter 10.10: 0 = None, 1 = invalid, 2 = FadeOut, 3 = invalid, 4 = PoofOut, 5 = HorizontalOut
     
@@ -142,98 +74,16 @@ static double bannerIdleDuration = 5;
         case 3: style = 0; break;
     }
     
-    return [self new_yosemite_animationOutWithWindow:arg1 delegate:arg2 animation:style];
+    return [self new_animationOutWithWindow:arg1 delegate:arg2 animation:style];
 }
 
 #pragma mark - Hiding icon
 
-#pragma mark -- OS X 10.8
-
-// Hiding the icon
-- (void)new_loadView {
-    [self new_loadView];
-    
-    if (!hideIcon) return;
-    
-    // Get the elements inside the notification
-    NSTextField* bodyTF = (NSTextField*)[self performSelector:@selector(bodyTF)];
-    NSTextField* headerTF = (NSTextField*)[self performSelector:@selector(headerTF)];
-    NSTextField* subtitleTF = (NSTextField*)[self performSelector:@selector(subtitleTF)];
-    NSImageView* theView = (NSImageView*)[self performSelector:@selector(imageView)];
-    
-    // Remove the conflicting horizontal constraints
-    NSArray* t = [[theView superview] constraints];
-    
-    for (int i=0; i<[t count]; i++)
-    {
-        if (([[(NSLayoutConstraint*)t[i] firstItem] isEqualTo:bodyTF]
-             || [[(NSLayoutConstraint*)t[i] firstItem] isEqualTo:headerTF]
-             || [[(NSLayoutConstraint*)t[i] firstItem] isEqualTo:subtitleTF])
-            && [[(NSLayoutConstraint*)t[i] description] rangeOfString:@"H:"].location != NSNotFound)
-        {
-            [[theView superview] removeConstraint:t[i]];
-        }
-    }
-    
-    // Add new constraints for the text
-    NSDictionary* views = @{ @"|" : [theView superview], @"body": bodyTF, @"title": headerTF, @"subtitle": subtitleTF };
-    NSMutableArray* newConstraints = [NSMutableArray array];
-    [newConstraints addObjectsFromArray:[NSLayoutConstraint constraintsWithVisualFormat:@"H:|-(12)-[body]" options:0 metrics:nil views:views]];
-    [newConstraints addObjectsFromArray:[NSLayoutConstraint constraintsWithVisualFormat:@"H:|-(12)-[subtitle]" options:0 metrics:nil views:views]];
-    [newConstraints addObjectsFromArray:[NSLayoutConstraint constraintsWithVisualFormat:@"H:|-(12)-[title]" options:0 metrics:nil views:views]];
-    [[theView superview] addConstraints:newConstraints];
-    
-    // Replace size constraints for the image view
-    [theView removeConstraints:[theView constraints]];
-    views = [NSDictionary dictionaryWithObject:theView forKey:@"image"];
-    [theView addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"H:[image(0)]" options:0 metrics:nil views:views]];
-    [theView addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"V:[image(0)]" options:0 metrics:nil views:views]];
-}
-
-#pragma mark -- OS X 10.9
+#pragma mark -- OS X 10.10
 
 // Hiding the icon
 - (BOOL)new_updateBodyWidthConstraint {
     BOOL result = [self new_updateBodyWidthConstraint];
-    
-    if (!hideIcon) return result;
-    
-    NSTextField* bodyTF = (NSTextField*)[self performSelector:@selector(bodyTF)];
-    NSView* scrollView = [[[bodyTF superview] superview] superview];
-    NSView* masterView = [scrollView superview];
-    
-    // Reduce scrollView's left margin from 46 to 7
-    NSLayoutConstraint* constraintToRemove = nil;
-    for (NSLayoutConstraint* constraint in [masterView constraints]) {
-        if ([constraint firstItem] == scrollView)
-        {
-            constraintToRemove = constraint;
-            break;
-        }
-    }
-    [masterView removeConstraint:constraintToRemove];
-    
-    NSArray* constraintsToAdd = [NSLayoutConstraint constraintsWithVisualFormat:@"H:|-(7)-[scrollView]"
-                                                                        options:0
-                                                                        metrics:nil
-                                                                          views:@{@"|": masterView, @"scrollView": scrollView}];
-    [masterView addConstraints:constraintsToAdd];
-    
-    // Resize the icon to 0x0 using constraints
-    NSImageView* identity = (NSImageView*)[[masterView subviews] objectAtIndex:0];
-    [identity removeConstraints:[identity constraints]];
-    NSDictionary* views = @{@"image": identity};
-    [identity addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"H:[image(0)]" options:0 metrics:nil views:views]];
-    [identity addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"V:[image(0)]" options:0 metrics:nil views:views]];
-    
-    return result;
-}
-
-#pragma mark -- OS X 10.10
-
-// Hiding the icon
-- (BOOL)new_yosemite_updateBodyWidthConstraint {
-    BOOL result = [self new_yosemite_updateBodyWidthConstraint];
     
     if (!hideIcon) return result;
     
@@ -242,7 +92,7 @@ static double bannerIdleDuration = 5;
     NSView* underMasterView = scrollView.superview;
     NSView* masterView = scrollView.superview.superview;
     
-    // Reduce scrollView's left margin from 46 to 7
+    // Reduce scrollView's left margin from 46 to 8
     NSLayoutConstraint* constraintToRemove = nil;
     for (NSLayoutConstraint* constraint in masterView.constraints) {
         if (constraint.firstItem == scrollView)
@@ -253,7 +103,7 @@ static double bannerIdleDuration = 5;
     }
     [masterView removeConstraint:constraintToRemove];
     
-    NSArray* constraintsToAdd = [NSLayoutConstraint constraintsWithVisualFormat:@"H:|-(7)-[scrollView]"
+    NSArray* constraintsToAdd = [NSLayoutConstraint constraintsWithVisualFormat:@"H:|-(8)-[scrollView]"
                                                                         options:0
                                                                         metrics:nil
                                                                           views:@{@"|": masterView, @"scrollView": scrollView}];
@@ -292,7 +142,7 @@ static double bannerIdleDuration = 5;
     return result;
 }
 
-#pragma mark -- OS X 10.9 & OS X 10.10
+#pragma mark -- OS X 10.9+
 
 - (void)new__setHorizontalMask {
     [self new__setHorizontalMask];
@@ -302,7 +152,7 @@ static double bannerIdleDuration = 5;
         [(NSView*)self setFrameSize:NSMakeSize(292, ((NSView*)self).frame.size.height)];
 }
 
-#pragma mark - OS X 10.9 Banner animations duration
+#pragma mark - OS X 10.9+ Banner animations duration
 
 // Entry animation duration + Exit animation duration
 - (id)new_initWithWindow:(id)arg1 type:(int)arg2 delegate:(id)arg3 duration:(double)arg4 transitionType:(int)arg5 {
@@ -426,69 +276,25 @@ static double bannerIdleDuration = 5;
     // Fixing Growl
     [self swizzle:NSClassFromString(@"NCModel") method:@selector(setNote:)];
     
-    if ([self OSIsMountainLion])
-    {
-        #pragma mark OS X 10.8-specific Swizzling
-        
-        Class class = NSClassFromString(@"NCWindowLayoutController");
-        
-        // Exit animation style & duration
-        [self swizzle:class method:@selector(animateOutSlide:duration:)];
-        
-        // Icon pulse + Entry animation style & duration
-        [self swizzle:class method:@selector(animateInDrop:duration:)];
-        
-        // Banner idle duration
-        [self swizzle:class method:@selector(_presentBanner:withUnpresentedCount:)];
-        
-        // Hiding the icon
-        [self swizzle:NSClassFromString(@"NCBannerViewController") method:@selector(loadView)];
-    }
-    else
-    {
-        #pragma mark OS X 10.9+ Swizzling
-        
-        Class class = NSClassFromString(@"NCBannerAnimation");
-        
-        // Entry animation style
-        [self swizzle:class classMethod:@selector(animationInWithWindow:delegate:animation:)];
+    Class class = NSClassFromString(@"NCBannerAnimation");
+    
+    // Entry animation style
+    [self swizzle:class classMethod:@selector(animationInWithWindow:delegate:animation:)];
 
-        // Exit animation style
-        if ([self OSIsMavericks])
-        {
-            [self swizzle:class classMethod:@selector(animationOutWithWindow:delegate:animation:)];
-        }
-        else
-        {
-            [self swizzle:class classMethod:@selector(animationOutWithWindow:delegate:animation:) prefix:@"yosemite"];
-        }
-        
-        // Entry animation duration + Exit animation duration
-        [self swizzle:class method:@selector(initWithWindow:type:delegate:duration:transitionType:)];
-        
-        // Banner idle duration
-        if ([self OSIsMavericks])
-        {
-            [self swizzle:NSClassFromString(@"NCWindowLayoutController")
-                   method:@selector(_displayTimeForModel:)];
-        }
-        else
-        {
-            [self swizzle:NSClassFromString(@"NCWindowLayoutController")
-                   method:@selector(_displayNotification:forApplication:withUnpresentedCount:animation:)];
-        }
-        
-        // Hiding the icon
-        if ([self OSIsMavericks])
-        {
-            [self swizzle:NSClassFromString(@"NCBannerViewController") method:@selector(updateBodyWidthConstraint)];
-        }
-        else
-        {
-            [self swizzle:NSClassFromString(@"NCBannerViewController") method:@selector(updateBodyWidthConstraint) prefix:@"yosemite"];
-        }
-        [self swizzle:NSClassFromString(@"NCAlertScrollView") method:@selector(_setHorizontalMask)];
-    }
+    // Exit animation style
+    [self swizzle:class classMethod:@selector(animationOutWithWindow:delegate:animation:)];
+    
+    // Entry animation duration + Exit animation duration
+    [self swizzle:class method:@selector(initWithWindow:type:delegate:duration:transitionType:)];
+    
+    // Banner idle duration
+    [self swizzle:NSClassFromString(@"NCWindowLayoutController")
+          method:@selector(_displayNotification:forApplication:withUnpresentedCount:animation:)];
+    
+    // Hiding the icon
+    [self swizzle:NSClassFromString(@"NCBannerViewController") method:@selector(updateBodyWidthConstraint)];
+
+    [self swizzle:NSClassFromString(@"NCAlertScrollView") method:@selector(_setHorizontalMask)];
 }
 
 - (void)swizzle:(Class)class method:(SEL)oldSelector prefix:(NSString*)prefix {
@@ -538,18 +344,6 @@ static double bannerIdleDuration = 5;
     
     NSImage* icon = [workspace iconForFile:appPath];
     return icon ? icon : nil;
-}
-
-- (BOOL)OSIsMountainLion {
-    return ![NSProcessInfo instancesRespondToSelector:@selector(endActivity:)];
-}
-
-- (BOOL)OSIsMavericks {
-    return ![self OSIsMountainLion] && ![self OSIsYosemiteOrHigher];
-}
-
-- (BOOL)OSIsYosemiteOrHigher {
-    return [NSProcessInfo instancesRespondToSelector:@selector(isOperatingSystemAtLeastVersion:)];
 }
 
 + (void)gotNewSettings:(NSNotification*)notification {

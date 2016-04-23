@@ -7,7 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		B21B399B16D21D4E00278191 /* CustomNC.bundle in CopyFiles */ = {isa = PBXBuildFile; fileRef = B21B399816D21D3000278191 /* CustomNC.bundle */; };
+		B21B399B16D21D4E00278191 /* CustomNC.bundle in CopyFiles */ = {isa = PBXBuildFile; fileRef = B21B399816D21D3000278191 /* CustomNC.bundle */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
 		B243E6F315C76F1300713CB5 /* LoginItem.m in Sources */ = {isa = PBXBuildFile; fileRef = B243E6F215C76F1300713CB5 /* LoginItem.m */; };
 		B29D098B15C45E0900E25374 /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B29D098A15C45E0900E25374 /* Cocoa.framework */; };
 		B29D099515C45E0900E25374 /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = B29D099315C45E0900E25374 /* InfoPlist.strings */; };
@@ -185,7 +185,7 @@
 			isa = PBXProject;
 			attributes = {
 				CLASSPREFIX = CNC;
-				LastUpgradeCheck = 0500;
+				LastUpgradeCheck = 0730;
 				ORGANIZATIONNAME = inket;
 			};
 			buildConfigurationList = B29D098015C45E0900E25374 /* Build configuration list for PBXProject "CustomNCUI" */;
@@ -293,6 +293,7 @@
 				CLANG_ENABLE_OBJC_ARC = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
 				COPY_PHASE_STRIP = NO;
+				ENABLE_TESTABILITY = YES;
 				GCC_C_LANGUAGE_STANDARD = gnu99;
 				GCC_DYNAMIC_NO_PIC = NO;
 				GCC_ENABLE_OBJC_EXCEPTIONS = YES;
@@ -339,6 +340,7 @@
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "CustomNCUI/CustomNC-Prefix.pch";
 				INFOPLIST_FILE = "CustomNCUI/CustomNC-Info.plist";
+				PRODUCT_BUNDLE_IDENTIFIER = "me.inket.${PRODUCT_NAME:rfc1034identifier}";
 				PRODUCT_NAME = CustomNC;
 				WRAPPER_EXTENSION = app;
 			};
@@ -351,6 +353,7 @@
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "CustomNCUI/CustomNC-Prefix.pch";
 				INFOPLIST_FILE = "CustomNCUI/CustomNC-Info.plist";
+				PRODUCT_BUNDLE_IDENTIFIER = "me.inket.${PRODUCT_NAME:rfc1034identifier}";
 				PRODUCT_NAME = CustomNC;
 				WRAPPER_EXTENSION = app;
 			};

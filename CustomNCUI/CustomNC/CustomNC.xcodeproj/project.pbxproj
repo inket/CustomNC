@@ -159,7 +159,7 @@
 		B28BA54115C1E83E00897E82 /* Project object */ = {
 			isa = PBXProject;
 			attributes = {
-				LastUpgradeCheck = 0500;
+				LastUpgradeCheck = 0730;
 				ORGANIZATIONNAME = inket;
 			};
 			buildConfigurationList = B28BA54415C1E83E00897E82 /* Build configuration list for PBXProject "CustomNC" */;
@@ -221,6 +221,7 @@
 				CLANG_ENABLE_OBJC_ARC = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
 				COPY_PHASE_STRIP = NO;
+				ENABLE_TESTABILITY = YES;
 				GCC_C_LANGUAGE_STANDARD = gnu99;
 				GCC_DYNAMIC_NO_PIC = NO;
 				GCC_ENABLE_OBJC_EXCEPTIONS = YES;
@@ -268,6 +269,7 @@
 				GCC_PREFIX_HEADER = "CustomNC/CustomNC-Prefix.pch";
 				INFOPLIST_FILE = "CustomNC/CustomNC-Info.plist";
 				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Bundles";
+				PRODUCT_BUNDLE_IDENTIFIER = "me.inket.${PRODUCT_NAME:rfc1034identifier}";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				WRAPPER_EXTENSION = bundle;
 			};
@@ -281,6 +283,7 @@
 				GCC_PREFIX_HEADER = "CustomNC/CustomNC-Prefix.pch";
 				INFOPLIST_FILE = "CustomNC/CustomNC-Info.plist";
 				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Bundles";
+				PRODUCT_BUNDLE_IDENTIFIER = "me.inket.${PRODUCT_NAME:rfc1034identifier}";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				WRAPPER_EXTENSION = bundle;
 			};

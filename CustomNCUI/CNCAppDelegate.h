@@ -10,9 +10,8 @@
 #import "LoginItem.h"
 
 @interface CNCAppDelegate : NSObject <NSApplicationDelegate> {
-    BOOL isSIMBL;
-    BOOL isEasySIMBL;
-    
+    BOOL SIMBLInstalled;
+
     NSTimeInterval apply;
 }
 

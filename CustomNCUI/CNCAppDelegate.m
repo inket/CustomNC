@@ -7,7 +7,6 @@
 
 #import "CNCAppDelegate.h"
 
-#define RUNNING_AGENT ([NSRunningApplication runningApplicationsWithBundleIdentifier:@"com.github.norio-nomura.SIMBL-Agent"])
 #define RUNNING_NC ([NSRunningApplication runningApplicationsWithBundleIdentifier:@"com.apple.notificationcenterui"])
 
 @implementation CNCAppDelegate
@@ -43,14 +42,10 @@
     [_exitAnimationStyle setMenu:exitMenu];
     
     [self install]; // Install/update plug-in if necessary
-    
-    if (!isEasySIMBL)
-        // SIMBL doesn't inject apps at user login
-        // so we have to do that with an automator workflow set as a login item
-        [self addLoginItem];
-    else
-        // EasySIMBL doesn't have such problems
-        [self removeLoginItem];
+
+    // SIMBL doesn't inject apps at user login
+    // so we have to do that with an automator workflow set as a login item
+    [self addLoginItem];
     
     // Sync the UI elements to the saved preferences
     NSUserDefaults* userDefaults = [NSUserDefaults standardUserDefaults];
@@ -162,7 +157,7 @@
 #pragma mark - Applying Settings
 
 - (IBAction)apply:(id)sender {
-    if (DEBUG_ENABLED) NSLog(@"%@ user clicked Apply", isEasySIMBL?@"EasySIMBL":@"SIMBL");
+    if (DEBUG_ENABLED) NSLog(@"SIMBL user clicked Apply");
 
     [_applyButton setTitle:@"Applying…"];
     [_applyButton setEnabled:NO];
@@ -223,23 +218,24 @@
     
     // *** Making sure SIMBL is installed
     BOOL isDir = NO;
+    NSString* systemSIMBLpath = @"/System/Library/ScriptingAdditions/SIMBL.osax";
     NSString* SIMBLpath = @"/Library/ScriptingAdditions/SIMBL.osax";
-    NSString* SIMBLuserPath = [@"~/Library/ScriptingAdditions/SIMBL.osax" stringByExpandingTildeInPath];
-    NSString* easySIMBLpath = [@"~/Library/ScriptingAdditions/EasySIMBL.osax" stringByExpandingTildeInPath];
+
+    SIMBLInstalled = [fileManager fileExistsAtPath:SIMBLpath isDirectory:&isDir] || [fileManager fileExistsAtPath:systemSIMBLpath isDirectory:&isDir];
     
-    isSIMBL = [fileManager fileExistsAtPath:SIMBLpath isDirectory:&isDir] || [fileManager fileExistsAtPath:SIMBLuserPath isDirectory:&isDir];
-    isEasySIMBL = [fileManager fileExistsAtPath:easySIMBLpath isDirectory:&isDir] || [RUNNING_AGENT count] > 0;
+    if (DEBUG_ENABLED) NSLog(@"SIMBL: %@", SIMBLInstalled ? @"YES" : @"NO");
     
-    if (DEBUG_ENABLED) NSLog(@"SIMBL: %@, EasySIMBL: %@", isSIMBL?@"YES":@"NO", isEasySIMBL?@"YES":@"NO");
-    
-    if (!isSIMBL && !isEasySIMBL)
+    if (!SIMBLInstalled)
     {
-        NSAlert* alert = [NSAlert alertWithMessageText:@"CustomNC requires SIMBL or EasySIMBL to function" defaultButton:@"Take me there!" alternateButton:@"Cancel" otherButton:@"" informativeTextWithFormat:@"SIMBL is a transparent app that enables modifications like CustomNC. It's easy to install and doesn't need any setup.\n\nGet EasySIMBL at https://github.com/norio-nomura/EasySIMBL/#how-to-install"];
+        NSAlert* alert = [NSAlert alertWithMessageText:@"CustomNC requires SIMBL to function"
+                                         defaultButton:@"Take me there!"
+                                       alternateButton:@"Cancel"
+                                           otherButton:@"" informativeTextWithFormat:@"SIMBL is a transparent app that enables modifications like CustomNC. \n\nmySIMBL allows you to easily install SIMBL. Get mySIMBL at https://github.com/w0lfschild/mySIMBL"];
         
         NSInteger buttonClicked = [alert runModal];
         
         if (buttonClicked == 1)
-            [[NSWorkspace sharedWorkspace] openURL:[NSURL URLWithString:@"https://github.com/norio-nomura/EasySIMBL/#how-to-install"]];
+            [[NSWorkspace sharedWorkspace] openURL:[NSURL URLWithString:@"https://github.com/w0lfschild/mySIMBL"]];
         
         [NSApp terminate:self];
     }
@@ -351,9 +347,7 @@
 }
 
 - (void)inject {
-    if (isEasySIMBL)
-        [self easySIMBLInject];
-    else if (isSIMBL)
+    if (SIMBLInstalled)
         [self SIMBLInject];
     
     [_applyButton setTitle:@"Apply"];
@@ -361,40 +355,6 @@
     
     // Re-activate CustomNC because relaunching NotificationCenter would take focus away
     [NSTimer scheduledTimerWithTimeInterval:0.5 target:self selector:@selector(activate) userInfo:nil repeats:NO];
-}
-
-- (void)easySIMBLInject {
-    if (DEBUG_ENABLED) NSLog(@"User has EasySIMBL, trying to kill the agent");
-    
-    NSArray* runningAgent = RUNNING_AGENT;
-    
-    if ([runningAgent count] > 0)
-    {
-        NSString* agentPath = [[[(NSRunningApplication*)runningAgent[0] bundleURL] path] copy];
-        [(NSRunningApplication*)runningAgent[0] terminate];
-        
-        if (DEBUG_ENABLED) NSLog(@"Killed the agent @ %@", agentPath);
-        
-        int slept = 0;
-        
-        while ([RUNNING_AGENT count] > 0 && slept < 5)
-        {
-            sleep(1);
-            slept += 1;
-        }
-        
-        if ([RUNNING_AGENT count] == 0)
-        {
-            [[NSWorkspace sharedWorkspace] openFile:agentPath];
-            if (DEBUG_ENABLED) NSLog(@"Started the agent");
-        }
-    }
-    else
-    {
-        NSAlert* alert = [NSAlert alertWithMessageText:@"Uh oh. There seems to be a problem." defaultButton:@"Try later" alternateButton:@"" otherButton:@"" informativeTextWithFormat:@"EasySIMBL's agent is not running. You'll have to restart for the changes to be effective."];
-        
-        [alert runModal];
-    }
 }
 
 - (void)SIMBLInject {
@@ -470,7 +430,6 @@
 }
 
 #pragma mark - Managing the login item to inject at startup
-// Applies to SIMBL users only. EasySIMBL users do not need this.
 
 - (void)addLoginItem {
     if (![LoginItem loginItemExists])

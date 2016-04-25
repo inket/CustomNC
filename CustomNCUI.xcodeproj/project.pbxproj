@@ -167,6 +167,7 @@
 				B29D098315C45E0900E25374 /* Frameworks */,
 				B29D098415C45E0900E25374 /* Resources */,
 				B230DFB716D1ECA6005A4ED0 /* CopyFiles */,
+				B2A058561CCDAA67006ABFDF /* ShellScript */,
 			);
 			buildRules = (
 			);
@@ -234,6 +235,22 @@
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXResourcesBuildPhase section */
+
+/* Begin PBXShellScriptBuildPhase section */
+		B2A058561CCDAA67006ABFDF /* ShellScript */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "codesign -s \"Developer ID Application\" \"$BUILT_PRODUCTS_DIR/CustomNC.app/Contents/Resources/CustomNCLauncher.app/Contents/document.wflow\"\ncodesign -s \"Developer ID Application\" \"$BUILT_PRODUCTS_DIR/CustomNC.app/Contents/Resources/CustomNCLauncher.app\"";
+		};
+/* End PBXShellScriptBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
 		B29D098215C45E0900E25374 /* Sources */ = {
@@ -336,6 +353,7 @@
 		B29D09A515C45E0A00E25374 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				CODE_SIGN_IDENTITY = "Developer ID Application";
 				COMBINE_HIDPI_IMAGES = YES;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "CustomNCUI/CustomNC-Prefix.pch";
@@ -349,6 +367,7 @@
 		B29D09A615C45E0A00E25374 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				CODE_SIGN_IDENTITY = "Developer ID Application";
 				COMBINE_HIDPI_IMAGES = YES;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "CustomNCUI/CustomNC-Prefix.pch";

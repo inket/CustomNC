@@ -24,15 +24,25 @@ Please note that the icon pulse and the Poof exit animation options were removed
 
 Apple didn't change much so updating the app was pretty easy and straightforward but this time around they took away the "Raise" animation and put back "Poof". Why can't we have both ?
 
+**El Capitan update**
+
+Notification Center didn't change that much so this update is more about supporting new locations for SIMBL.
+
 #### Requirements
 
-- SIMBL or [EasySIMBL](https://github.com/norio-nomura/EasySIMBL/#how-to-install)
+- SIMBL (install easily with [mySIMBL](https://github.com/w0lfschild/mySIMBL))
 
 #### Download
 
 [Download here!](https://github.com/inket/CustomNC/releases)
 
 #### Changelog
+
+###### 1.5
+- Dropped EasySIMBL support.
+- Dropped support for Mavericks and older.
+- Added support for El Capitan & Yosemite 10.10.4+
+- Codesigned.
 
 ###### 1.4
 - Added support for Yosemite.

@@ -79,19 +79,19 @@ static double bannerIdleDuration = 5;
 
 #pragma mark - Hiding icon
 
-#pragma mark -- OS X 10.10
+#pragma mark -- OS X 10.10+
 
 // Hiding the icon
 - (BOOL)new_updateBodyWidthConstraint {
     BOOL result = [self new_updateBodyWidthConstraint];
-    
+
     if (!hideIcon) return result;
-    
+
     NSView* bodyTFContainer = ((NSTextField*)[self performSelector:@selector(bodyTF)]).superview;
     NSView* scrollView = bodyTFContainer.superview.superview;
     NSView* underMasterView = scrollView.superview;
     NSView* masterView = scrollView.superview.superview;
-    
+
     // Reduce scrollView's left margin from 46 to 8
     NSLayoutConstraint* constraintToRemove = nil;
     for (NSLayoutConstraint* constraint in masterView.constraints) {
@@ -102,14 +102,14 @@ static double bannerIdleDuration = 5;
         }
     }
     [masterView removeConstraint:constraintToRemove];
-    
+
     NSArray* constraintsToAdd = [NSLayoutConstraint constraintsWithVisualFormat:@"H:|-(8)-[scrollView]"
                                                                         options:0
                                                                         metrics:nil
                                                                           views:@{@"|": masterView, @"scrollView": scrollView}];
     [masterView addConstraints:constraintsToAdd];
-    
-    
+
+
     // Replace the notification title's constraint
     for (NSView* subview in underMasterView.subviews) {
         if ([subview isKindOfClass:NSClassFromString(@"NCFadedClipView")])
@@ -120,17 +120,16 @@ static double bannerIdleDuration = 5;
                                                                              metrics:nil
                                                                                views:@{@"|": underMasterView, @"NCFadedClipView": fadedClipView}];
             [underMasterView addConstraints:newConstraint];
-            
+
             break;
         }
     }
-    
+
     for (NSView* subview in masterView.subviews) {
         if ([subview isKindOfClass:NSClassFromString(@"NCIdentityImageView")])
         {
             // Resize the icon to 0x0 using constraints
             NSImageView* identity = (NSImageView*)subview;
-            NSLog(@"identity: %@", identity);
             [identity removeConstraints:[identity constraints]];
             NSDictionary* views = @{@"image": identity};
             [identity addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"H:[image(0)]" options:0 metrics:nil views:views]];
@@ -138,7 +137,7 @@ static double bannerIdleDuration = 5;
             break;
         }
     }
-    
+
     return result;
 }
 
